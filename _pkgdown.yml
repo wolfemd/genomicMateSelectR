@@ -1,0 +1,33 @@
+reference:
+- title: "Genomic mate selection functions"
+  desc: >
+    Top level functions to predict the performance of individual genotypes and the usefulness of potential crosses.
+- contents:
+  - runGenomicPredictions
+  - predictCrosses
+- title: "Cross prediction functions"
+  desc: >
+    Behind-the-scenes functions that predict cross means and variances.
+- contents:
+  - predCrossVars
+  - predCrossMeans
+  - calcGameticLD
+  - calcCrossLD
+- title: "Cross-validation functions"
+  desc: "Functions for automatically conducting cross-validation-based estimation of genomic prediction accuracy."
+- contents:
+  - matches("CrossVal")
+- title: "NextGen Cassava genomic selection"
+  desc: "Functions used in the standardized steps of the NextGen Cassava genomic selection breeding pipeline"
+- subtitle: "Cassavabase phenotype data pipeline functions"
+  desc: "Functions for processing of cleaning and otherwise preparing field data."
+- contents:
+  - has_concept("cassavabase_pheno_pipeline")
+- subtitle: "Imputation and Informatics"
+  desc: "Functions wrapping around standard command line bioinformatics tools, used for setting up and running imputation and post-imputation filtering on the genotypes needing prediction."
+  contents:
+  - has_concept("imputation_functions")
+- title: "Helper functions"
+  desc: "Support functions big and small!"
+- contents:
+  - has_concept("helper")

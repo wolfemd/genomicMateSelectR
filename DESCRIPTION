@@ -1,0 +1,31 @@
+Package: genomicMateSelectR
+Type: Package
+Title: Genomic Mate Selection
+Version: 0.2.0
+Author: Marnin Wolfe <wolfemd@gmail.com>
+Maintainer: Marnin Wolfe <wolfemd@gmail.com>
+Description: Predict the usefulness of a cross. Multi-trait selection index 
+  mean and variance prediction based on parental haplotypes, a genetic map, 
+  and marker effects. Implement cross-validation procedures to estimate the 
+  accuracy predicting the performance (breeding value, total genetic value 
+  including dominance) of previously unobserved individuals as well as cross 
+  means and variances. Successor package to predCrossVar.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Imports: 
+    magrittr,
+    tibble,
+    dplyr,
+    sommer,
+    RhpcBLASctl,
+    here,
+    rsample,
+    psych,
+    furrr,
+    purrr,
+    lme4,
+    qs
+URL: https://github.com/wolfemd/genomicMateSelectR
+BugReports: https://github.com/wolfemd/genomicMateSelectR/issues
