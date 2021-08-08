@@ -99,7 +99,12 @@ predCrossMeans." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/wolfemd/genomicMateSelectR/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -114,7 +119,7 @@ predCrossMeans." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Predict crosses</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/wolfemd/genomicMateSelectR/blob/master/R/gmsFunctions.R'><code>R/gmsFunctions.R</code></a></small>
     <div class="hidden name"><code>predictCrosses.Rd</code></div>
     </div>
 
@@ -143,7 +148,9 @@ This is a wrapper function around <code><a href='predCrossVars.html'>predCrossVa
   <span class='va'>haploMat</span>,
   <span class='va'>recombFreqMat</span>,
   ncores <span class='op'>=</span> <span class='fl'>1</span>,
-  nBLASthreads <span class='op'>=</span> <span class='cn'>NULL</span>
+  nBLASthreads <span class='op'>=</span> <span class='cn'>NULL</span>,
+  predTheMeans <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  predTheVars <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -188,6 +195,14 @@ cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID</p></td>
     <tr>
       <th>nBLASthreads</th>
       <td><p>number of cores for each worker to use for multi-thread BLAS</p></td>
+    </tr>
+    <tr>
+      <th>predTheMeans</th>
+      <td><p>default: TRUE, t/f whether to predict cross means</p></td>
+    </tr>
+    <tr>
+      <th>predTheVars</th>
+      <td><p>default: TRUE, t/f whether to predict cross vars</p></td>
     </tr>
     </table>
 

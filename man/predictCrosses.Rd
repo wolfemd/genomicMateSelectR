@@ -15,7 +15,9 @@ predictCrosses(
   haploMat,
   recombFreqMat,
   ncores = 1,
-  nBLASthreads = NULL
+  nBLASthreads = NULL,
+  predTheMeans = TRUE,
+  predTheVars = TRUE
 )
 }
 \arguments{
@@ -40,6 +42,10 @@ cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID}
 \item{ncores}{number of cores}
 
 \item{nBLASthreads}{number of cores for each worker to use for multi-thread BLAS}
+
+\item{predTheMeans}{default: TRUE, t/f whether to predict cross means}
+
+\item{predTheVars}{default: TRUE, t/f whether to predict cross vars}
 }
 \value{
 tibble, one row, two list columns (basically a named two-element
