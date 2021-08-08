@@ -634,6 +634,8 @@ runGenomicPredictions<-function(modelType,
 #' @param recombFreqMat a square symmetric matrix with values = (1-2*c1), where c1=matrix of expected recomb. frequencies. The choice to do 1-2c1 outside the function was made for computation efficiency; every operation on a big matrix takes time.
 #' @param ncores number of cores
 #' @param nBLASthreads number of cores for each worker to use for multi-thread BLAS
+#' @param predTheMeans default: TRUE, t/f whether to predict cross means
+#' @param predTheVars default: TRUE, t/f whether to predict cross vars
 #'
 #' @return tibble, one row, two list columns (basically a named two-element
 #' list of lists): \code{tidyPreds[[1]]} and \code{rawPreds[[1]]}.
@@ -648,7 +650,9 @@ predictCrosses<-function(modelType,
                          CrossesToPredict,
                          snpeffs,dosages,
                          haploMat,recombFreqMat,
-                         ncores=1,nBLASthreads=NULL){
+                         ncores=1,nBLASthreads=NULL,
+                         predTheMeans=TRUE,
+                         predTheVars=TRUE){
   ## Format SNP effect matrices ~~~~~~~~~~~~~~~~~~~~~~~~
 
   AlleleSubEffectList<-snpeffs$allelesubsnpeff %>%
@@ -669,7 +673,8 @@ predictCrosses<-function(modelType,
     DomEffectList<-snpeffs$domsnpeff %>%
       `names<-`(.,snpeffs$Trait) %>%
       map(.,~t(.)) }
-
+  # store raw mean and var preds
+  if(predTheVars){
   ## Predict cross variances ~~~~~~~~~~~~~~~~~~~~~~~~
   print("Predicting cross variance parameters")
   if(modelType=="A"){
@@ -713,8 +718,10 @@ predictCrosses<-function(modelType,
       mutate(predOf="VarBV") %>%
       bind_rows(predictedvarTGV %>%
                   unnest(predVars)) }
+  }
 
-  ## Predict cross means ~~~~~~~~~~~~~~~~~~~~~~~~
+  if(predTheMeans){
+    ## Predict cross means ~~~~~~~~~~~~~~~~~~~~~~~~
   print("Predicting cross means")
   ### predict MeanBVs
   predictedmeans<-predCrossMeans(AddEffectList=AlleleSubEffectList,
@@ -744,19 +751,23 @@ predictCrosses<-function(modelType,
                                predType="TGV"))
   }
 
-  ## SIMPLIFIED, TIDY, CROSS-WISE OUTPUT ~~~~~~~~~~~~~~~~~~~~~~~~
-  # store raw mean and var preds
-  rawPreds<-list(predMeans=list(predictedmeans),
-                 predVars=list(predictedvars))
+  }
 
+  ## SIMPLIFIED, TIDY, CROSS-WISE OUTPUT ~~~~~~~~~~~~~~~~~~~~~~~~
+  rawPreds<-list()
+  if(predTheMeans){ rawPreds[["predMeans"]]<-list(predictedmeans) }
+  if(predTheVars){ rawPreds[["predVars"]]<-list(predictedvars) }
+
+  if(predTheMeans){
   ## tidy pred. means ~~~~~~
   predictedmeans %<>%
     mutate(predOf=gsub("Mean","",predOf),
            Trait2=Trait) %>% # to match with variance pred. output
     rename(Trait1=Trait) %>% # to match with variance pred. output
     select(sireID,damID,predOf,Trait1,Trait2,predMean)
-
-  ## tidy pred. vars ~~~~~~
+}
+  if(predTheVars){
+    ## tidy pred. vars ~~~~~~
   predictedvars %<>%
     select(sireID,damID,Nsegsnps,predOf,Trait1,Trait2,predVar) %>%
     mutate(predOf=gsub("Var","",predOf))
@@ -783,11 +794,12 @@ predictCrosses<-function(modelType,
                          predOf="TGV") %>%
                   select(-predVarA,-predVarD))
   }
-
+}
   ## SELECTION INDEX MEANS AND VARIANCES ~~~~~~~~~~~~~~~~~~~~~~~~
   #### Compute and add to tidy output, if requested
   if(selInd){
     print("Computing SELECTION INDEX means and variances.")
+    if(predTheMeans){
     traits<-unique(predictedmeans$Trait1)
     ## Compute Mean SELIND
     predictedmeans %<>%
@@ -805,7 +817,10 @@ predictCrosses<-function(modelType,
                    values_to = "predMean") %>%
       mutate(Trait2=Trait1) %>%
       select(sireID,damID,predOf,Trait1,Trait2,predMean)
-    ## Compute Var SELIND
+    }
+
+    if(predTheVars){
+      ## Compute Var SELIND
     require(furrr); plan(multisession, workers = ncores)
     options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
 
@@ -832,15 +847,25 @@ predictCrosses<-function(modelType,
       unnest(predVars)
     plan(sequential)
   }
-
+  }
+  if(predTheMeans & predTheVars){
   ## USEFULNESS CRITERIA ~~~~~~~~~~~~~~~~~~~~~~~~
   tidyPreds<-predictedvars %>%
     inner_join(predictedmeans) %>%
     rename(Trait=Trait1) %>%
     select(sireID,damID,Nsegsnps,predOf,Trait,predMean,predVar) %>%
     mutate(predSD=sqrt(predVar),
-           predUsefulness=predMean+(stdSelInt*predSD))
-
+           predUsefulness=predMean+(stdSelInt*predSD)) }
+  if(predTheMeans & !predTheVars){
+    tidyPreds<-predictedvars %>%
+      rename(Trait=Trait1) %>%
+      select(sireID,damID,Nsegsnps,predOf,Trait,predVar)
+  }
+  if(!predTheMeans & predTheVars){
+    tidyPreds<-predictedmeans %>%
+      select(sireID,damID,Nsegsnps,predOf,Trait,predMean) %>%
+      mutate(predSD=sqrt(predVar))
+  }
   predictions<-tibble(tidyPreds=list(tidyPreds),
                       rawPreds=list(rawPreds))
   return(predictions)
