@@ -451,7 +451,7 @@ runGenomicPredictions<-function(modelType,
                         getPEV = returnPEV)
 
     # Shrink the memory footprint
-    rm(grms,A); if(model %in% c("DirDom","AD")){ rm(D) };
+    rm(grms,A); if(modelType %in% c("DirDom","AD")){ rm(D) };
 
     if(getMarkEffs==TRUE | modelType=="DirDom"){
 
@@ -562,7 +562,6 @@ runGenomicPredictions<-function(modelType,
     return(results)
   }
 
-  #require(furrr); require(future.callr); plan(callr, workers = ncores)
   require(furrr); plan(multisession, workers = ncores)
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   predictions<-blups %>%
