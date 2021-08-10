@@ -222,7 +222,7 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
     tidyr::pivot_longer(c(trainset,testset),
                  names_to = "Dataset",
                  values_to = "sampleIDs") %>%
-    tiydr::crossing(Trait=blups$Trait) %>%
+    tidyr::crossing(Trait=blups$Trait) %>%
     dplyr::left_join(blups) %>%
     rename(blupsMat=blups)
 
