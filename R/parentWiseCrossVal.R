@@ -219,11 +219,11 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
 
   traintestdata<-parentfolds %>%
     dplyr::select(Repeat,Fold,trainset,testset) %>%
-    pivot_longer(c(trainset,testset),
+    tidyr::pivot_longer(c(trainset,testset),
                  names_to = "Dataset",
                  values_to = "sampleIDs") %>%
-    crossing(Trait=blups$Trait) %>%
-    left_join(blups) %>%
+    tiydr::crossing(Trait=blups$Trait) %>%
+    dplyr::left_join(blups) %>%
     rename(blupsMat=blups)
 
   fitModel<-function(sampleIDs,blupsMat,modelType,gid,grms,dosages,nBLASthreads,...){
@@ -254,7 +254,7 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
     if(modelType=="DirDom"){
       randFormula<-paste0(randFormula,"+vs(",gid,"d_star,Gu=D)")
       f<-getPropHom(dosages)
-      trainingdata %<>% mutate(f=f[trainingdata$gid]) }
+      trainingdata %<>% dplyr::mutate(f=f[trainingdata$gid]) }
 
     # Fixed model statements
     fixedFomula<-ifelse(modelType=="DirDom",
@@ -310,7 +310,7 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
                      GEBV=as.numeric(fit$U[[paste0("u:",gid,"a")]]$drgBLUP)) }
     if(modelType=="AD"){
       gblups %<>% # compute GEDD (genomic-estimated dominance deviation)
-        mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
+        dplyr::mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
                # compute GETGV
                GETGV=rowSums(.[,grepl("GE",colnames(.))])) }
     if(modelType=="DirDom"){
@@ -322,10 +322,10 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
       gblups<-tibble(GID=as.character(names(fit$U[[paste0("u:",gid,"a")]]$drgBLUP)),
                      GEadd=as.numeric(fit$U[[paste0("u:",gid,"a")]]$drgBLUP),
                      GEdom_star=as.numeric(fit$U[[paste0("u:",gid,"d_star")]]$drgBLUP)) %>%
-        left_join(tibble(GID=rownames(ge_domval),GEdomval=as.numeric(ge_domval))) %>%
-        left_join(tibble(GID=rownames(gebv),GEBV=as.numeric(gebv))) %>%
+        dplyr::left_join(tibble(GID=rownames(ge_domval),GEdomval=as.numeric(ge_domval))) %>%
+        dplyr::left_join(tibble(GID=rownames(gebv),GEBV=as.numeric(gebv))) %>%
         # GETGV from GEadd + GEdomval
-        mutate(GETGV=GEadd+GEdomval)
+        dplyr::mutate(GETGV=GEadd+GEdomval)
     }
 
     # Extract variance components
@@ -339,10 +339,10 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
                     varcomps=list(varcomps),
                     fixeffs=list(fixeffs))
     # Add snpeffects to output
-    results %<>% mutate(allelesubsnpeff=list(allelesubsnpeff))
-    if(modelType=="AD"){ results %<>% mutate(domdevsnpeff=list(domdevsnpeff)) }
+    results %<>% dplyr::mutate(allelesubsnpeff=list(allelesubsnpeff))
+    if(modelType=="AD"){ results %<>% dplyr::mutate(domdevsnpeff=list(domdevsnpeff)) }
     if(modelType=="DirDom"){
-      results %<>% mutate(addsnpeff=list(addsnpeff),
+      results %<>% dplyr::mutate(addsnpeff=list(addsnpeff),
                           domstar_snpeff=list(domstar_snpeff),
                           domsnpeff=list(domsnpeff)) }
     # this is to remove conflicts with dplyr function select() downstream
@@ -355,7 +355,7 @@ getMarkEffs<-function(parentfolds,blups,gid,modelType,grms,dosages,
   require(furrr); plan(multisession, workers = ncores)
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   traintestdata<-traintestdata %>%
-    mutate(modelOut=future_pmap(.,fitModel,
+    dplyr::mutate(modelOut=future_pmap(.,fitModel,
                                 modelType=modelType,
                                 gid=gid,
                                 grms=grms,
@@ -391,7 +391,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
     dplyr::select(Repeat,Fold,Trait,modelType,contains("snpeff")) %>%
     nest(EffectList=c(Trait,contains("snpeff"))) %>%
     # AlleleSubEffects to predict VarBV for all models
-    mutate(AlleleSubEffectList=map(EffectList,
+    dplyr::mutate(AlleleSubEffectList=map(EffectList,
                                    function(EffectList){
                                      allelesubsnpeff<-map(EffectList$allelesubsnpeff,~t(.))
                                      names(allelesubsnpeff)<-EffectList$Trait
@@ -399,7 +399,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
   if(modelType=="AD"){
     predvars<-predvars %>%
       # DomDevEffects for model "AD" to predict VarTGV = VarBV + VarDD
-      mutate(DomDevEffectList=map(EffectList,
+      dplyr::mutate(DomDevEffectList=map(EffectList,
                                   function(EffectList){
                                     domdevsnpeff<-map(EffectList$domdevsnpeff,~t(.))
                                     names(domdevsnpeff)<-EffectList$Trait
@@ -407,7 +407,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
   if(modelType=="DirDom"){
     predvars<-predvars %>%
       # AddEffectList + DomEffectList --> VarTGV; AlleleSubEffectList --> VarBV;
-      mutate(AddEffectList=map(EffectList,
+      dplyr::mutate(AddEffectList=map(EffectList,
                                function(EffectList){
                                  addsnpeff<-map(EffectList$addsnpeff,~t(.))
                                  names(addsnpeff)<-EffectList$Trait
@@ -419,7 +419,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
                                  return(domsnpeff) })) }
 
   predvars %<>%
-    left_join(parentfolds %>%
+    dplyr::left_join(parentfolds %>%
                 dplyr::select(-testparents,-trainset,-testset)) %>%
     dplyr::select(-EffectList)
 
@@ -429,7 +429,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
 
   if(modelType=="A"){
     predvars<-predvars %>%
-      mutate(predVars=map2(CrossesToPredict,AlleleSubEffectList,
+      dplyr::mutate(predVars=map2(CrossesToPredict,AlleleSubEffectList,
                            ~predCrossVars(CrossesToPredict=.x,
                                           AddEffectList=.y,
                                           modelType="A",
@@ -438,11 +438,11 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
                                           ncores=ncores,
                                           nBLASthreads=nBLASthreads) %>%
                              unnest(predVars) %>%
-                             mutate(predOf="VarBV") %>%
+                             dplyr::mutate(predOf="VarBV") %>%
                              nest(predVars=c(Trait1,Trait2,predOf,predVar)))) }
   if(modelType=="AD"){
     predvars<-predvars %>%
-      mutate(predVars=pmap(.,function(CrossesToPredict,
+      dplyr::mutate(predVars=pmap(.,function(CrossesToPredict,
                                       AlleleSubEffectList,
                                       DomDevEffectList,...){
         out<-predCrossVars(CrossesToPredict=CrossesToPredict,
@@ -455,12 +455,12 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
                            nBLASthreads=nBLASthreads)
         out<-out %>%
           unnest(predVars) %>%
-          mutate(predOf=ifelse(predOf=="VarA","VarBV","VarDD")) %>%
+          dplyr::mutate(predOf=ifelse(predOf=="VarA","VarBV","VarDD")) %>%
           nest(predVars=c(Trait1,Trait2,predOf,predVar))
         return(out) })) }
   if(modelType=="DirDom"){
     predvars<-predvars %>%
-      mutate(predVars=pmap(.,function(CrossesToPredict,
+      dplyr::mutate(predVars=pmap(.,function(CrossesToPredict,
                                       AlleleSubEffectList,
                                       AddEffectList,
                                       DomEffectList,...){
@@ -483,7 +483,7 @@ predictCrossVars<-function(modelType,snpeffs,parentfolds,
                                  nBLASthreads=nBLASthreads)
         out<-predVarBV %>%
           unnest(predVars) %>%
-          mutate(predOf="VarBV") %>%
+          dplyr::mutate(predOf="VarBV") %>%
           bind_rows(predVarTGV %>%
                       unnest(predVars)) %>%
           nest(predVars=c(Trait1,Trait2,predOf,predVar))
@@ -510,17 +510,17 @@ predictCrossMeans<-function(modelType,snpeffs,parentfolds,
     nest(EffectList=c(Trait,contains("snpeff"))) %>%
     # AlleleSubEffects are available from all prediction models
     ## therefore, prediction of MeanBV is available for all models
-    mutate(AlleleSubEffectList=map(EffectList,
+    dplyr::mutate(AlleleSubEffectList=map(EffectList,
                                    function(EffectList){
                                      allelesubsnpeff<-map(EffectList$allelesubsnpeff,~t(.))
                                      names(allelesubsnpeff)<-EffectList$Trait
                                      return(allelesubsnpeff)})) %>%
-    left_join(parentfolds %>%
+    dplyr::left_join(parentfolds %>%
                 dplyr::select(-testparents,-trainset,-testset))
 
   ## predict MeanBVs
   predmeans %<>%
-    mutate(predMeans=pmap(.,function(AlleleSubEffectList,CrossesToPredict,...){
+    dplyr::mutate(predMeans=pmap(.,function(AlleleSubEffectList,CrossesToPredict,...){
       return(predCrossMeans(AddEffectList=AlleleSubEffectList,
                             CrossesToPredict=CrossesToPredict,
                             doseMat=doseMat,ncores=ncores,predType="BV")) }))
@@ -531,7 +531,7 @@ predictCrossMeans<-function(modelType,snpeffs,parentfolds,
     ### As implemented, modelType="AD" is the "classical" partition (BVs+ DomDevs)
     predmeans<-predmeans %>%
       # AddEffectList + DomEffectList --> VarTGV; AlleleSubEffectList --> VarBV;
-      mutate(AddEffectList=map(EffectList,
+      dplyr::mutate(AddEffectList=map(EffectList,
                                function(EffectList){
                                  addsnpeff<-map(EffectList$addsnpeff,~t(.))
                                  names(addsnpeff)<-EffectList$Trait
@@ -544,7 +544,7 @@ predictCrossMeans<-function(modelType,snpeffs,parentfolds,
 
     ## prediction of MeanTGVs
     predmeans %<>%
-      mutate(predMeans=pmap(.,function(predMeans,AddEffectList,DomEffectList,
+      dplyr::mutate(predMeans=pmap(.,function(predMeans,AddEffectList,DomEffectList,
                                        CrossesToPredict,...){
         return(predMeans %>%
                  bind_rows(predCrossMeans(AddEffectList=AddEffectList,
@@ -589,37 +589,37 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
   out<-crossValOut %>%
     unnest(predVars) %>%
     distinct(Repeat,Fold,modelType,sireID,damID) %>%
-    left_join(ped) %>%
+    dplyr::left_join(ped) %>%
     nest(CrossesToPredict=c(sireID,damID,GID)) %>%
-    left_join(gblups)
+    dplyr::left_join(gblups)
   out %<>%
     # remove any gebv/getgv NOT in the crosses-to-be-predicted to save mem
-    mutate(testset_gblups=map2(testset_gblups,CrossesToPredict,
+    dplyr::mutate(testset_gblups=map2(testset_gblups,CrossesToPredict,
                                ~semi_join(.x,.y)))
   # for modelType=="A" remove the GETGV as equiv. to GEBV
   if(modelType=="A"){
     out %<>%
-      mutate(testset_gblups=map(testset_gblups,
+      dplyr::mutate(testset_gblups=map(testset_gblups,
                                 ~select(.,Trait,GID,GEBV) %>%
-                                  pivot_longer(.,cols = c(GEBV),
+                                  tidyr::pivot_longer(.,cols = c(GEBV),
                                                names_to = "predOf",
                                                values_to = "GBLUP") %>%
                                   nest(gblups=-predOf))) }
   # for modelType=="AD" remove the GEDD, pivot to long form GEBV/GETGV
   if(modelType=="AD"){
     out %<>%
-      mutate(testset_gblups=map(testset_gblups,
+      dplyr::mutate(testset_gblups=map(testset_gblups,
                                 ~select(.,Trait,GID,GEBV,GETGV) %>%
-                                  pivot_longer(cols = c(GEBV,GETGV),
+                                  tidyr::pivot_longer(cols = c(GEBV,GETGV),
                                                names_to = "predOf",
                                                values_to = "GBLUP") %>%
                                   nest(gblups=-predOf)))
   }
   if(modelType=="DirDom"){
     out %<>%
-      mutate(testset_gblups=map(testset_gblups,
+      dplyr::mutate(testset_gblups=map(testset_gblups,
                                 ~select(.,Trait,GID,GEBV,GETGV) %>%
-                                  pivot_longer(cols = c(GEBV,GETGV),
+                                  tidyr::pivot_longer(cols = c(GEBV,GETGV),
                                                names_to = "predOf",
                                                values_to = "GBLUP") %>%
                                   nest(gblups=-predOf)))
@@ -630,19 +630,19 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
   # for each family-to-be-predicted
   # in each rep-fold-predOf combination
   out %<>%
-    mutate(famgblups=map2(gblups,CrossesToPredict,
-                          ~left_join(.x,.y) %>%
-                            pivot_wider(names_from = "Trait",
+    dplyr::mutate(famgblups=map2(gblups,CrossesToPredict,
+                          ~dplyr::left_join(.x,.y) %>%
+                            tidyr::pivot_wider(names_from = "Trait",
                                         values_from = "GBLUP") %>%
                             nest(gblupmat=c(-sireID,-damID)) %>%
-                            mutate(gblupmat=map(gblupmat,~column_to_rownames(.,var="GID"))))) %>%
+                            dplyr::mutate(gblupmat=map(gblupmat,~column_to_rownames(.,var="GID"))))) %>%
     select(-CrossesToPredict,-gblups) %>%
     unnest(famgblups)
 
   #gblupmat<-out$gblupmat[[1]]
   out %<>%
     # outer loop over rep-fold-predtype
-    mutate(obsVars=map(gblupmat,function(gblupmat){
+    dplyr::mutate(obsVars=map(gblupmat,function(gblupmat){
       #gblupmat<-famgblups$gblupmat[[1]]
       covMat<-cov(gblupmat)
       # to match predCrossVar output
@@ -652,7 +652,7 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
       obsvars %<>%
         as.data.frame(.) %>%
         rownames_to_column(var = "Trait1") %>%
-        pivot_longer(cols = c(-Trait1),
+        tidyr::pivot_longer(cols = c(-Trait1),
                      names_to = "Trait2",
                      values_to = "obsVar",
                      values_drop_na = T)
@@ -663,7 +663,7 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
           bind_rows(tibble(Trait1="SELIND",
                            Trait2="SELIND",
                            obsVar=selIndVar),.) }
-      obsvars %<>% mutate(obsVar=as.numeric(obsVar))
+      obsvars %<>% dplyr::mutate(obsVar=as.numeric(obsVar))
       return(obsvars) }),
       famSize=map_dbl(gblupmat,nrow)) %>%
     select(-gblupmat) %>%
@@ -681,7 +681,7 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
       bind_rows(cvout %>%
                   group_by(Repeat,Fold,modelType,sireID,damID,Trait1,Trait2) %>%
                   summarize(predVar=sum(predVar),.groups = 'drop') %>%
-                  mutate(predOf="VarTGV"))
+                  dplyr::mutate(predOf="VarTGV"))
   }
 
   if(modelType=="DirDom"){
@@ -692,7 +692,7 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
                   filter(predOf %in% c("VarA","VarD")) %>%
                   group_by(Repeat,Fold,modelType,sireID,damID,Trait1,Trait2) %>%
                   summarize(predVar=sum(predVar),.groups = 'drop') %>%
-                  mutate(predOf="VarTGV"))
+                  dplyr::mutate(predOf="VarTGV"))
   }
 
   cvout %<>%
@@ -705,9 +705,9 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
     options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
     cvout %<>%
       ## loop over each rep-fold-predOf-sireIDxdamID
-      mutate(predVars=future_map(predVars,function(predVars){
+      dplyr::mutate(predVars=future_map(predVars,function(predVars){
         gmat<-predVars %>%
-          pivot_wider(names_from = "Trait2",
+          tidyr::pivot_wider(names_from = "Trait2",
                       values_from = "predVar") %>%
           column_to_rownames(var = "Trait1") %>%
           as.matrix
@@ -725,11 +725,11 @@ varPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
 
   }
   out %<>%
-    mutate(predOf=ifelse(predOf=="GEBV","VarBV","VarTGV")) %>%
-    left_join(cvout %>%
+    dplyr::mutate(predOf=ifelse(predOf=="GEBV","VarBV","VarTGV")) %>%
+    dplyr::left_join(cvout %>%
                 unnest(predVars)) %>%
     nest(predVSobs=c(sireID,damID,predVar,obsVar,famSize)) %>%
-    mutate(AccuracyEst=map_dbl(predVSobs,function(predVSobs){
+    dplyr::mutate(AccuracyEst=map_dbl(predVSobs,function(predVSobs){
       out<-psych::cor.wt(predVSobs[,c("predVar","obsVar")],
                          w = predVSobs$famSize) %$% r[1,2] %>%
         round(.,3)
@@ -766,30 +766,30 @@ meanPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
   out<-crossValOut %>%
     unnest(predMeans) %>%
     distinct(Repeat,Fold,modelType,sireID,damID) %>%
-    left_join(ped) %>%
+    dplyr::left_join(ped) %>%
     nest(CrossesToPredict=c(sireID,damID,GID)) %>%
-    left_join(gblups)
+    dplyr::left_join(gblups)
 
   out %<>%
     # remove any gebv/getgv NOT in the crosses-to-be-predicted to save mem
-    mutate(testset_gblups=map2(testset_gblups,CrossesToPredict,
+    dplyr::mutate(testset_gblups=map2(testset_gblups,CrossesToPredict,
                                ~semi_join(.x,.y)))
 
   # for modelType=="A" and "AD", MeanBV only (remove GETGV)
   if(modelType %in% c("A","AD")){
     out %<>%
-      mutate(testset_gblups=map(testset_gblups,
+      dplyr::mutate(testset_gblups=map(testset_gblups,
                                 ~select(.,Trait,GID,GEBV) %>%
-                                  pivot_longer(.,cols = c(GEBV),
+                                  tidyr::pivot_longer(.,cols = c(GEBV),
                                                names_to = "predOf",
                                                values_to = "GBLUP") %>%
                                   nest(gblups=-predOf))) }
 
   if(modelType=="DirDom"){
     out %<>%
-      mutate(testset_gblups=map(testset_gblups,
+      dplyr::mutate(testset_gblups=map(testset_gblups,
                                 ~select(.,Trait,GID,GEBV,GETGV) %>%
-                                  pivot_longer(cols = c(GEBV,GETGV),
+                                  tidyr::pivot_longer(cols = c(GEBV,GETGV),
                                                names_to = "predOf",
                                                values_to = "GBLUP") %>%
                                   nest(gblups=-predOf)))
@@ -800,18 +800,18 @@ meanPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
   # for each family-to-be-predicted
   # in each rep-fold-predOf combination
   out %<>%
-    mutate(famgblups=map2(gblups,CrossesToPredict,
-                          ~left_join(.x,.y) %>%
-                            pivot_wider(names_from = "Trait",
+    dplyr::mutate(famgblups=map2(gblups,CrossesToPredict,
+                          ~dplyr::left_join(.x,.y) %>%
+                            tidyr::pivot_wider(names_from = "Trait",
                                         values_from = "GBLUP") %>%
                             nest(gblupmat=c(-sireID,-damID)) %>%
-                            mutate(gblupmat=map(gblupmat,~column_to_rownames(.,var="GID"))))) %>%
+                            dplyr::mutate(gblupmat=map(gblupmat,~column_to_rownames(.,var="GID"))))) %>%
     select(-CrossesToPredict,-gblups) %>%
     unnest(famgblups)
 
   out %<>%
     # outer loop over rep-fold-predtype
-    mutate(obsMeans=map(gblupmat,function(gblupmat){
+    dplyr::mutate(obsMeans=map(gblupmat,function(gblupmat){
       #      gblupmeans<-colMeans(gblupmat) %>% as.list
       gblupmeans<-colMeans(gblupmat) %>% as.data.frame %>% as.matrix
 
@@ -835,23 +835,23 @@ meanPredAccuracy<-function(crossValOut,snpeffs,ped,modelType,
   if(selInd==TRUE){
     # compute predicted selection index variances
     cvout %<>%
-      pivot_wider(names_from = "Trait",
+      tidyr::pivot_wider(names_from = "Trait",
                   values_from = "predMean") %>%
-      mutate(SELIND=as.numeric(cvout %>%
-                                 pivot_wider(names_from = "Trait",
+      dplyr::mutate(SELIND=as.numeric(cvout %>%
+                                 tidyr::pivot_wider(names_from = "Trait",
                                              values_from = "predMean") %>%
                                  select(any_of(names(SIwts))) %>%
                                  as.matrix(.)%*%SIwts)) %>%
-      pivot_longer(cols = c("SELIND",unique(cvout$Trait)),
+      tidyr::pivot_longer(cols = c("SELIND",unique(cvout$Trait)),
                    names_to = "Trait",
                    values_to = "predMean")
   }
 
   out %<>%
-    mutate(predOf=ifelse(predOf=="GEBV","MeanBV","MeanTGV")) %>%
-    left_join(cvout) %>%
+    dplyr::mutate(predOf=ifelse(predOf=="GEBV","MeanBV","MeanTGV")) %>%
+    dplyr::left_join(cvout) %>%
     nest(predVSobs=c(sireID,damID,predMean,obsMean,famSize)) %>%
-    mutate(AccuracyEst=map_dbl(predVSobs,function(predVSobs){
+    dplyr::mutate(AccuracyEst=map_dbl(predVSobs,function(predVSobs){
       out<-psych::cor.wt(predVSobs[,c("predMean","obsMean")],
                          w = predVSobs$famSize) %$% r[1,2] %>%
         round(.,3)
@@ -885,7 +885,7 @@ makeParentFolds<-function(ped,gid,nrepeats=5,nfolds=5,seed=NULL){
   parentfolds<-rsample::vfold_cv(tibble(Parents=union(ped$sireID,
                                                       ped$damID)),
                                  v = nfolds,repeats = nrepeats) %>%
-    mutate(folds=map(splits,function(splits){
+    dplyr::mutate(folds=map(splits,function(splits){
       #splits<-parentfolds$splits[[1]]
       testparents<-testing(splits)$Parents
       trainparents<-training(splits)$Parents
@@ -939,7 +939,7 @@ makeParentFolds<-function(ped,gid,nrepeats=5,nfolds=5,seed=NULL){
   }
   if(nrepeats==1){
     parentfolds %<>%
-      mutate(Repeat="Repeat1") %>%
+      dplyr::mutate(Repeat="Repeat1") %>%
       rename(Fold=id) %>%
       select(-splits)
   }
@@ -947,7 +947,7 @@ makeParentFolds<-function(ped,gid,nrepeats=5,nfolds=5,seed=NULL){
 
   # Crosses To Predict
   parentfolds %<>%
-    mutate(CrossesToPredict=map(testparents,
+    dplyr::mutate(CrossesToPredict=map(testparents,
                                 ~filter(ped %>%
                                           # only need a list of fams-to-predict
                                           # not the progeny info

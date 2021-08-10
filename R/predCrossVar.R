@@ -53,7 +53,7 @@ predCrossVars<-function(CrossesToPredict,modelType,
   require(furrr); plan(multisession, workers = ncores)
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   crossespredicted<-CrossesToPredict %>%
-    mutate(predVars=future_pmap(.,
+    dplyr::mutate(predVars=future_pmap(.,
                                 predOneCross,
                                 modelType=modelType,
                                 haploMat=haploMat,
@@ -149,12 +149,12 @@ predOneCross<-function(sireID,damID,modelType,
                                          DomEffectList=DomEffectList)) %>%
       unnest(predVars)
     computetime<-proc.time()[3]-starttime
-    out_thiscross<-tibble(Nsegsnps=length(segsnps2keep),
+    out_thiscross<-tibble::tibble(Nsegsnps=length(segsnps2keep),
                           ComputeTime=computetime,
                           predVars=list(varcovars))
   } else {
     computetime<-proc.time()[3]-starttime
-    out_thiscross<-tibble(Nsegsnps=length(segsnps2keep),
+    out_thiscross<-tibble::tibble(Nsegsnps=length(segsnps2keep),
                           ComputeTime=computetime,
                           predVars=list()) }
   return(out_thiscross)
@@ -204,9 +204,9 @@ predOneCrossVar<-function(Trait1,Trait2,progenyLD,modelType,
 
   ## Predict cross additive variance
   #### posterior mean (VPM)
-  predVarA_vpm<-quadform(D=progenyLD,
-                         x=postMeanAddEffects[[Trait1]],
-                         y=postMeanAddEffects[[Trait2]])
+  predVarA_vpm<-genomicMateSelectR::quadform(D=progenyLD,
+                                             x=postMeanAddEffects[[Trait1]],
+                                             y=postMeanAddEffects[[Trait2]])
 
   #### posterior mean (co)variance (PMV)
   if(predType=="PMV"){ predVarA_pmv<-predVarA_vpm+sum(diag(progenyLD%*%postVarCovarOfAddEffects)) }
@@ -215,9 +215,9 @@ predOneCrossVar<-function(Trait1,Trait2,progenyLD,modelType,
     ## Predict cross dominance variance
     #### VPM
     progenyLDsq<-progenyLD*progenyLD
-    predVarD_vpm<-quadform(D=progenyLDsq,
-                           x=postMeanDomEffects[[Trait1]],
-                           y=postMeanDomEffects[[Trait2]])
+    predVarD_vpm<-genomicMateSelectR::quadform(D=progenyLDsq,
+                                               x=postMeanDomEffects[[Trait1]],
+                                               y=postMeanDomEffects[[Trait2]])
     #### PMV
     if(predType=="PMV"){ predVarD_pmv<-predVarD_vpm+sum(diag(progenyLDsq%*%postVarCovarOfDomEffects)) }
   }
@@ -226,7 +226,7 @@ predOneCrossVar<-function(Trait1,Trait2,progenyLD,modelType,
   if(modelType=="AD"){ rm(progenyLD,progenyLDsq); gc() }
 
   # Tidy the results
-  out<-tibble(predOf="VarA",predVar=predVarA_vpm)
+  out<-tibble::tibble(predOf="VarA",predVar=predVarA_vpm)
   ### VarA
   if(predType=="PMV"){
     out<-out %>%
@@ -235,9 +235,9 @@ predOneCrossVar<-function(Trait1,Trait2,progenyLD,modelType,
   ### If modelType=="AD" - VarD
   if(modelType=="AD"){
     if(predType=="VPM"){
-      out %<>% bind_rows(tibble(predOf="VarD",predVar=predVarD_vpm)) }
+      out %<>% dplyr::bind_rows(tibble::tibble(predOf="VarD",predVar=predVarD_vpm)) }
     if(predType=="PMV"){
-      out %<>% bind_rows(tibble(predOf="VarD",
+      out %<>% dplyr::bind_rows(tibble::tibble(predOf="VarD",
                                  VPM=predVarD_vpm,
                                  PMV=predVarD_pmv)) }
   }
@@ -337,7 +337,7 @@ predCrossMeans<-function(CrossesToPredict,predType,
                          ncores=1,
                          ...){
   #nBLASthreads=NULL,
-  means<-tibble(Trait=names(AddEffectList))
+  means<-tibble::tibble(Trait=names(AddEffectList))
   parents<-CrossesToPredict %$% union(sireID,damID)
   doseMat<-doseMat[parents,colnames(AddEffectList[[1]])]
 
@@ -355,11 +355,11 @@ predCrossMeans<-function(CrossesToPredict,predType,
         parentGEBVs<-tcrossprod(doseMat,AddEffectList[[Trait]])
 
         predmeans<-CrossesToPredict %>%
-          left_join(tibble(sireID=rownames(parentGEBVs),
+          dplyr::left_join(tibble::tibble(sireID=rownames(parentGEBVs),
                            sireGEBV=as.numeric(parentGEBVs))) %>%
-          left_join(tibble(damID=rownames(parentGEBVs),
+          dplyr::left_join(tibble::tibble(damID=rownames(parentGEBVs),
                            damGEBV=as.numeric(parentGEBVs))) %>%
-          mutate(predOf="MeanBV",
+          dplyr::mutate(predOf="MeanBV",
                  predMean=(sireGEBV+damGEBV)/2)
         return(predmeans) }))
     plan(sequential)
@@ -368,14 +368,14 @@ predCrossMeans<-function(CrossesToPredict,predType,
   if(predType=="TGV"){
     plan(multisession, workers = ncores)
     means<-means %>%
-      mutate(predictedMeans=future_map(Trait,function(Trait,
+      dplyr::mutate(predictedMeans=future_map(Trait,function(Trait,
                                                       #BLASthreads=nBLASthreads,
                                                       ...){
 
         #if(!is.null(nBLASthreads)) { RhpcBLASctl::blas_set_num_threads(nBLASthreads) }
 
         predmeans<-CrossesToPredict %>%
-          mutate(predOf="MeanTGV",
+          dplyr::mutate(predOf="MeanTGV",
                  predMean=map2_dbl(sireID,damID,function(sireID,damID,...){
                    # Eqn 14.6 from Falconer+MacKay
                    p1<-doseMat[sireID,]/2

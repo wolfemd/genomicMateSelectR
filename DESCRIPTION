@@ -18,13 +18,14 @@ Imports:
     magrittr,
     tibble,
     dplyr,
+    tidyr,
+    purrr,
     sommer,
     RhpcBLASctl,
     here,
     rsample,
     psych,
     furrr,
-    purrr,
     lme4,
     qs
 URL: https://github.com/wolfemd/genomicMateSelectR
