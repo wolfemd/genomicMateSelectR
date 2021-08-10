@@ -28,5 +28,10 @@ Imports:
     furrr,
     lme4,
     qs
+Depends: 
+    tibble,
+    dplyr,
+    tidyr,
+    purrr
 URL: https://github.com/wolfemd/genomicMateSelectR
 BugReports: https://github.com/wolfemd/genomicMateSelectR/issues
