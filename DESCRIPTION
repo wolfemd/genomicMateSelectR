@@ -16,10 +16,6 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports: 
     magrittr,
-    tibble,
-    dplyr,
-    tidyr,
-    purrr,
     sommer,
     RhpcBLASctl,
     here,
@@ -28,5 +24,10 @@ Imports:
     furrr,
     lme4,
     qs
+Depends:
+    tibble,
+    dplyr,
+    tidyr,
+    purrr
 URL: https://github.com/wolfemd/genomicMateSelectR
 BugReports: https://github.com/wolfemd/genomicMateSelectR/issues
