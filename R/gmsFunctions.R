@@ -855,15 +855,15 @@ predictCrosses<-function(modelType,
     select(sireID,damID,Nsegsnps,predOf,Trait,predMean,predVar) %>%
     mutate(predSD=sqrt(predVar),
            predUsefulness=predMean+(stdSelInt*predSD)) }
-  if(predTheMeans & !predTheVars){
+  if(!predTheMeans & predTheVars){
     tidyPreds<-predictedvars %>%
       rename(Trait=Trait1) %>%
-      select(sireID,damID,Nsegsnps,predOf,Trait,predVar)
-  }
-  if(!predTheMeans & predTheVars){
-    tidyPreds<-predictedmeans %>%
-      select(sireID,damID,Nsegsnps,predOf,Trait,predMean) %>%
+      select(sireID,damID,Nsegsnps,predOf,Trait,predVar) %>%
       mutate(predSD=sqrt(predVar))
+  }
+  if(predTheMeans & !predTheVars){
+    tidyPreds<-predictedmeans %>%
+      select(sireID,damID,Nsegsnps,predOf,Trait,predMean)
   }
   predictions<-tibble(tidyPreds=list(tidyPreds),
                       rawPreds=list(rawPreds))
