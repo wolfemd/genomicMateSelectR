@@ -850,6 +850,7 @@ predictCrosses<-function(modelType,
   if(predTheMeans & predTheVars){
   ## USEFULNESS CRITERIA ~~~~~~~~~~~~~~~~~~~~~~~~
   tidyPreds<-predictedvars %>%
+    filter(Trait1==Trait2) %>%
     inner_join(predictedmeans) %>%
     rename(Trait=Trait1) %>%
     select(sireID,damID,Nsegsnps,predOf,Trait,predMean,predVar) %>%
@@ -857,12 +858,14 @@ predictCrosses<-function(modelType,
            predUsefulness=predMean+(stdSelInt*predSD)) }
   if(!predTheMeans & predTheVars){
     tidyPreds<-predictedvars %>%
+      filter(Trait1==Trait2) %>%
       rename(Trait=Trait1) %>%
       select(sireID,damID,Nsegsnps,predOf,Trait,predVar) %>%
       mutate(predSD=sqrt(predVar))
   }
   if(predTheMeans & !predTheVars){
     tidyPreds<-predictedmeans %>%
+      rename(Trait=Trait1) %>%
       select(sireID,damID,predOf,Trait,predMean)
   }
   predictions<-tibble(tidyPreds=list(tidyPreds),
