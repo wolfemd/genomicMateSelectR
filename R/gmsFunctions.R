@@ -863,7 +863,7 @@ predictCrosses<-function(modelType,
   }
   if(predTheMeans & !predTheVars){
     tidyPreds<-predictedmeans %>%
-      select(sireID,damID,Nsegsnps,predOf,Trait,predMean)
+      select(sireID,damID,predOf,Trait,predMean)
   }
   predictions<-tibble(tidyPreds=list(tidyPreds),
                       rawPreds=list(rawPreds))
