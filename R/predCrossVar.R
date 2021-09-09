@@ -50,8 +50,9 @@ predCrossVars<-function(CrossesToPredict,modelType,
     if(predType=="VPM" & modelType=="AD"){ DomEffectList<-NULL; } }
 
   # Set-up a loop over the crosses
-  require(furrr); plan(multisession, workers = ncores)
-  options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
+  require(furrr);
+  if(ncores>1){ plan(multisession, workers = ncores); }
+    options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   crossespredicted<-CrossesToPredict %>%
     dplyr::mutate(predVars=future_pmap(.,
                                 predOneCross,
@@ -64,7 +65,7 @@ predCrossVars<-function(CrossesToPredict,modelType,
                                 AddEffectList=AddEffectList,
                                 DomEffectList=DomEffectList,
                                 nBLASthreads=nBLASthreads))
-  plan(sequential)
+  if(ncores>1){ plan(sequential) }
 
   crossespredicted %<>%
     unnest(predVars)
@@ -341,7 +342,8 @@ predCrossMeans<-function(CrossesToPredict,predType,
   parents<-CrossesToPredict %$% union(sireID,damID)
   doseMat<-doseMat[parents,colnames(AddEffectList[[1]])]
 
-  require(furrr); plan(multisession, workers = ncores)
+  require(furrr);
+  if(ncores>1){ plan(multisession, workers = ncores); }
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
 
   if(predType=="BV"){
@@ -362,7 +364,7 @@ predCrossMeans<-function(CrossesToPredict,predType,
           dplyr::mutate(predOf="MeanBV",
                  predMean=(sireGEBV+damGEBV)/2)
         return(predmeans) }))
-    plan(sequential)
+    if(ncores>1){ plan(sequential) }
   }
 
   if(predType=="TGV"){
@@ -386,7 +388,7 @@ predCrossMeans<-function(CrossesToPredict,predType,
                    meanG<-sum(g)
                    return(meanG)}))
         return(predmeans) }))
-    plan(sequential)
+    if(ncores>1){ plan(sequential) }
   }
   means<-means %>%
     unnest(predictedMeans)

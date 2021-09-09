@@ -562,7 +562,8 @@ runGenomicPredictions<-function(modelType,
     return(results)
   }
 
-  require(furrr); plan(multisession, workers = ncores)
+  require(furrr);
+  if(ncores>1){ plan(multisession, workers = ncores); }
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   predictions<-blups %>%
     mutate(genomicPredOut=future_map(TrainingData,
@@ -574,7 +575,7 @@ runGenomicPredictions<-function(modelType,
                                                grms=grms,
                                                dosages=dosages,
                                                nBLASthreads=nBLASthreads)))
-  plan(sequential)
+  if(ncores>1){ plan(sequential) }
 
   predictions %<>%
     select(-TrainingData) %>%
