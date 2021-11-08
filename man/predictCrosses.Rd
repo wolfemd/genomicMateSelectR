@@ -35,7 +35,9 @@ requires input weights via \code{SIwts}}
 Assumes SNPs coded 0, 1, 2. Nind rows x Nsnp
 cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID}
 
-\item{haploMat}{matrix of phased haplotypes, 2 rows per sample, cols = loci, {0,1}, rownames assumed to contain GIDs with a suffix, separated by "_" to distinguish haplotypes}
+\item{haploMat}{matrix of phased haplotypes, 2 rows per sample, cols = loci, {0,1},
+rownames assumed to contain GIDs with a suffix, separated by "_" to distinguish haplotypes.
+Currently, the haplotypes must be distinguished by the mandatory suffixes "_HapA" and "_HapB".}
 
 \item{recombFreqMat}{a square symmetric matrix with values = (1-2*c1), where c1=matrix of expected recomb. frequencies. The choice to do 1-2c1 outside the function was made for computation efficiency; every operation on a big matrix takes time.}
 

@@ -1,0 +1,258 @@
+---
+title: "Getting started predicting crosses"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started predicting crosses}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(genomicMateSelectR)
+```
+
+The following will be a demonstration of the core functions for predicting mate selection criteria available in `genomicMateSelectR`.
+
+# Simulated data
+
+I generated simulated data, included in the package (accessible via `data()`), which should clarify the input format(s) required.
+
+The example input data will be explained and used in the vignette below.
+
+Simulation was conducted with the package `AlphaSimR`.
+
+-   Simulate 100 individuals, 2 chrom., 100 seg. sites, 50 SNP/chr.
+-   2 traits, gen. corr. 0.5, $h^2=0.5$, 10 QTL/chr. equal parts additive + dominance.
+-   2 cycles of phenotypic selection, based on one of the two traits, top 5 individuals, 10 crosses x 10 progeny
+-   Generates 300 individuals across 3 generations
+
+# Quick Start
+
+In a subsequent section, we will dig into the details and more fully explore all the available options in `genomicMateSelectR`. First, a quick demo of the `predictCrosses()` function using (mostly) ready-to-go pre-prepared input data.
+
+To predict cross variance, 4 inputs are required:
+
+1.  Phased haplotypes of candidate parents
+
+-   Also a matrix of allele dosages
+
+2.  Recombination frequency matrix (derived from a genetic map)
+3.  Marker effects
+4.  Crosses to be predicted
+
+## Haplotype matrix
+
+First input is a matrix,`haploMat` with two rows per individual and one column per SNP locus.
+
+Alleles coded `{0,1}`. `rownames(haploMat)` contains sample IDs ("GID") with haplotypes distinguished by the mandatory suffixes "\_HapA" and "\_HapB". `colnames(haploMat)` correspond to SNP IDs (*i.e.* $chr \_ pos$), currently requires that chromosomes be distinguished using integers; no prefix to SNP IDs is allowed (i.e. 1_2 *not* chr1_2 and also not anything like A_2). In this example, the GIDs are all numbers, they are from simulated data; in practice they can be any alphanumeric string.
+
+```{r}
+data(haploMat); str(haploMat)
+```
+
+```{r}
+haploMat[1:6,1:8]
+```
+
+### Dosages
+
+For now, to use `predictCrosses()`, both a `haploMat` *and* another, related matrix (`dosages`) are required as input.
+
+The matrix `dosages` has one row per individual sample and one column per SNP marker. Column-names are the same as for `haploMat`. rownames are the same prefix as in `haploMat`, but no suffix ("\_HapA" or "\_HapB"). Genotypes are coded `{0, 1, 2}` counting the number of (usually) the alternative allele. Important that the counted allele is the same allele as indicated by the value `1` in the `haploMat`.
+
+```{r}
+data("doseMat")
+str(doseMat)
+```
+
+```{r}
+doseMat[1:3,1:8]
+```
+
+**NOTE:** The dual `dosages` and `haploMat` input requirement is because most users will be predicting cross means + variances and currently, the function `predCrossMeans()`, which is used internally, requires `dosages` and `predCrossVars()` needs a `haploMat`. Its computationally more efficient (I think) to avoid converting haplotype matrices into dosage matrices internally, thus I demand both be specified. On the improvement to-do list.
+
+## Recombination frequency matrix
+
+The second input, `recombFreqMat` is a square-symmetric matrix, with dimension *p*-markers by *p*-markers. The elements of `recombFreqMat`, should actually be `1-2*recombFreqMat`, meaning 1 minus 2 times the expected frequency of recombination between pairs of loci; a decision made for computational efficiency.
+
+The usual starting point to create this matrix will be a centimorgan-scale genetic map. `genomicMateSelectR` provides a helper function `genmap2recombfreq()` to facilitate the conversion.
+
+Users can input their genetic map as a named, numeric vector as shown below (`genmap`).
+
+```{r}
+data(genmap); 
+str(genmap)
+```
+
+```{r}
+genmap[1:10]
+```
+
+The input format for `predictCrosses()`, for reasons of computational efficiency, is actually `1-2*recombFreqMat` where `recombFreqMat` is a
+
+```{r}
+recombFreqMat<-genmap2recombfreq(genmap, nChr = 2)
+str(recombFreqMat)
+```
+
+```{r}
+recombFreqMat[1:5,1:5]
+```
+
+Now calc. `1-2*recombFreqMat`.
+
+```{r}
+recombFreqMat<-1-(2*recombFreqMat)
+recombFreqMat[1:5,1:5]
+```
+
+This corresponds to the input to `predictCrosses(recombFreqMat=)` and the example dataset included with the package: `data("recombFreqMat")`
+
+## Marker effects
+
+The third input, for `predictCrosses(snpeffs=)` are marker-effects from genome-wide marker regression e.g. RR-BLUP.
+
+Marker-effects are supplied as a `tibble` with one row per trait, one chr-type column named **Trait** and one or more list-type columns containing SNP-effects. Each element of each list-type SNP-effects column corresponds to effects for a single trait, and contains a matrix with a single column, rownames corresponding to SNP IDs and should match the IDs in `recombFreqMat` and `haploMat`.
+
+The number and required column names for the SNP-effect list-type columns depends on the value of `modelType==`. There are 3 model types implemented `"A"`, `"AD"` and `"DirDom"`. The `predictCrosses()` function is designed to be run with output produced by running the `runGenomicPredictions()` function using the same `modelType` setting. Both are designed to ensure / encourage the correct formulation of additive+dominance models.
+
+For this quick example, the additive-only model: `modelType="A"`. I'll introduce each model later and explain the correct inputs / expected outputs for those.
+
+The example dataset `data(snpeffsA)` is `gpredsA$genomicPredOut[[1]]` where `gpreds` is the output of running `runGenomicPredictions()` with `modelType = "A"`.
+
+```{r}
+data(snpeffsA)
+snpeffsA
+```
+
+Because `snpeffsA` is the output of `runGenomicPredictions()`, there are columns that are not required and will be ignored by `predictCrosses()`. The unecessary columns are **gblups**, **varcomps** and **fixeffs**.
+
+Required:
+
+```{r}
+snpeffsA %>% dplyr::select(Trait,allelesubsnpeff)
+```
+
+Two rows, one for each trait. One list-column, required to be labelled **allelsubsnpeff**, containing a single-column matrix of SNP-effects, rownames identifying SNP IDs.
+
+```{r}
+snpeffsA$allelesubsnpeff[[1]] %>% head
+```
+
+```{r}
+summary(snpeffsA$allelesubsnpeff[[1]])
+```
+
+## Crosses to predict
+
+Lastly, we just need to tell `predictCrosses()`, which crosses to predict. The input to argument `CrossesToPredict=` should be a `tibble` or `data.frame` with two-columns. Columns should be character-class (no factors!), column names should be **sireID** and **damID**. Names should be present in the rownames of `haploMat` and the row/colnames of `recombFreqMat`.
+
+There is a helper function `crosses2predict()` that takes a vector of parents as input and creates a `data.frame` of all pairwise matings, including self-crosses, but *excluding* reciprocal crosses, i.e. use as male == use as female. Basically `crosses2predict()` specifies crosses on the diagonal and in the upper-triangle of a potentially square-symmetrical mating matrix.
+
+Here, I'll just randomly choose 5 parents and make a list of the 15 `CrossesToPredict`.
+
+```{r}
+set.seed(42);
+parents<-sample(x = snpeffsA$gblups[[1]]$GID, size = 5, replace = F)
+CrossesToPredict<-crosses2predict(parents)
+CrossesToPredict %>% head
+```
+
+```{r}
+str(CrossesToPredict)
+```
+
+## Predict crosses
+
+And behold, we have the stuff we need to predict crosses.
+
+**Selection Indices:**\
+`genomicMateSelectR` is built to facilitate mating choices based on multiple traits, particularly using a user-specified set of weights (**SIwts**) to produce cross merit predictions on a linear selection index (`selInd`). When supplied multiple traits, `predictCrosses()` will predict both the variances of those traits and their covariance in each family. When the user specifies `selInd = T` and supplies a vector of weights with names matching the trait names, `predictCrosses()` will add predictions for a new composite trait, **SELIND** to the output.
+
+**SIwts** are used as-is by `predictCrosses()` so the user is responsible for choosing "good" values; a topic beyond the scope of this manual / vignette.
+
+```{r}
+SIwts<-c(0.75,0.25) %>% `names<-`(.,c("Trait1","Trait2"))
+SIwts
+```
+
+```{r}
+crossPreds<-predictCrosses(modelType="A",
+                           selInd = T, SIwts = SIwts,
+                           CrossesToPredict=CrossesToPredict,
+                           snpeffs=snpeffsA, 
+                           dosages=doseMat,
+                           haploMat=haploMat,
+                           recombFreqMat=recombFreqMat)
+```
+
+Now we can quickly examine the output.
+
+Produces a single-row tibble (basically a 2 element list) with two columns **tidyPreds** and **rawPreds**.
+
+```{r}
+crossPreds
+```
+
+Most users and breeders will work with the **tidyPreds**. This simplified output was designed especially for those interested in selections based on **SELIND**.
+
+Each row contains relevant predictions for a single trait in a single cross. Trait ***co***variances are excluded from this output in order to show both mean (**predMean**), variance / standard deviation (**predVar**, **predSD**) and usefulness (**predUsefulness**) side-by-side.
+
+```{r}
+crossPreds$tidyPreds[[1]]
+```
+
+```{r}
+crossPreds$tidyPreds[[1]] %>% str
+```
+
+Additional columns in **tidyPreds**:
+
+-   `Nsegsnps`: the number of SNPs expected to segregate in this cross. For compute efficiency, when predicting cross variances, `genomicMateSelectR` detects which SNPs will actually cause genetic variance within the cross, and restricts the analysis to those loci.
+
+-   `predOf`: "BV" for breeding value (all models), "TGV" for total genetic values (models "AD" and "DirDom" only). Here only "BV" because `modelType="A"`.
+
+-   `predUsefulness` is `predMean + stdSelInt*predSD`, where `stdSelInt` is the standardized selection intensity input to `predictCrosses()`, `stdSelInt = 2.67` by default.
+
+Complete details of the predictions, especially including trait-trait covariance predictions are available in the two-element, named-list contained in **rawPreds**:
+
+```{r}
+crossPreds$rawPreds[[1]] %>% str
+```
+
+At `crossPreds$rawPreds[[1]]$predMeans` are the predictions for cross means, and at `crossPreds$rawPreds[[1]]$predVars` are the predictions for cross variances.
+
+For sake of example, we should make a plot (predMean vs. predSD), for "fun" and then make a selection of the top 5 crosses, based on their predicted usefulness on the selection index:
+```{r}
+crossPreds$tidyPreds[[1]] %>% 
+  dplyr::filter(Trait=="SELIND") %>% 
+  ggplot2::ggplot(.,ggplot2::aes(x=predMean,y=predSD,
+                                 color=predUsefulness, size=predUsefulness)) + 
+  ggplot2::geom_point() + ggplot2::theme_bw()
+```
+```{r}
+crossPreds$tidyPreds[[1]] %>% 
+  dplyr::filter(Trait=="SELIND") %>% 
+  dplyr::slice_max(order_by = predUsefulness, n = 5)
+  # arrange(desc(predUsefulness)) %>% slice(1:5) # same as `slice_max`
+```
+
+# Next steps
+
+That concludes the quick demo, focused on input formatting and output contents, using the basic additive-model in the function `predictCrosses()` to get selection-index cross usefulness predictions.
+
+## Additional vignettes
+
+In subsequent vignettes I will provide:
+
+-   a full feature walkthrough for predicting crosses (`modelType="AD"`, `modelType="DirDom`),
+-   use of the functions for cross-validation (`runCrossVal()`, `runParentWiseCrossVal()`,
+-   genomic prediction (`runGenomicPredictions()`),
+-   possibly the imputation and breeding data processing helper functions (wrappers for e.g. Beagle and code for BreedBase data cleaning).

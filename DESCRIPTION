@@ -28,6 +28,11 @@ Depends:
     tibble,
     dplyr,
     tidyr,
-    purrr
+    purrr,
+    R (>= 2.10)
 URL: https://github.com/wolfemd/genomicMateSelectR
 BugReports: https://github.com/wolfemd/genomicMateSelectR/issues
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr

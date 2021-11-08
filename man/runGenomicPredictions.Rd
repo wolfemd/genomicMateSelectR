@@ -49,6 +49,7 @@ Each element is named either A or D. Matrices supplied must match
 required by A, AD and DirDom models. e.g. grms=list(A=A,D=D).}
 
 \item{dosages}{dosage matrix. required only for modelType=="DirDom".
+Also required if getMarkEffs==TRUE.
 Assumes SNPs coded 0, 1, 2. Nind rows x Nsnp
 cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID}
 

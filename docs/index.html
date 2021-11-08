@@ -51,6 +51,21 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/start_here.html">Getting started predicting crosses</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -82,12 +97,18 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install <a href="https://www.github.com/wolfemd/"><strong>genomicMateSelectR</strong> package from my GitHub</a> with:</p>
-<pre class="{.r}"><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master') </a></code></pre>
+<p>You can install <a href="https://www.github.com/wolfemd/genomicMateSelectR/"><strong>genomicMateSelectR</strong> package from my GitHub</a> with:</p>
+<pre class="{.r}"><code>devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master') </code></pre>
 </div>
-<div id="highlights" class="section level2">
+<div id="get-started" class="section level2">
 <h2 class="hasAnchor">
-<a href="#highlights" class="anchor"></a>HIGHLIGHTS</h2>
+<a href="#get-started" class="anchor"></a>Get Started</h2>
+<p><strong>CHECK OUT THE NEW VIGNETTE! –&gt; <a href="articles/start_here.html">Getting starting predicting crosses</a></strong></p>
+<p><strong>More to come!</strong></p>
+</div>
+<div id="feature-highlights" class="section level2">
+<h2 class="hasAnchor">
+<a href="#feature-highlights" class="anchor"></a>Feature highlights</h2>
 <ul>
 <li>Allows for parents to be of arbitrary heterozygosity/homozygosity (outbred or inbred)</li>
 <li>Predicts the <strong>additive</strong> <em>and</em> <strong>dominance</strong> genetic variances in the <span class="math inline"><em>F</em><sub>1</sub></span>
@@ -103,13 +124,13 @@
 <li>Various data helper functions</li>
 </ul>
 </div>
-<div id="core-functions" class="section level2">
+<div id="core-function-overview" class="section level2">
 <h2 class="hasAnchor">
-<a href="#core-functions" class="anchor"></a>Core functions</h2>
+<a href="#core-function-overview" class="anchor"></a>Core function overview</h2>
 <table class="table">
 <colgroup>
-<col width="7%">
-<col width="92%">
+<col width="5%">
+<col width="94%">
 </colgroup>
 <thead><tr class="header">
 <th><strong>Genomic mate selection functions</strong></th>
@@ -122,7 +143,7 @@
 </tr>
 <tr class="even">
 <td><code><a href="reference/predictCrosses.html">predictCrosses()</a></code></td>
-<td>Predict potentially for multiple traits, the means, variances and trait-trait covariances in a set ofuser supplied crosses. If requested, computed the selection index means and variances. Computes the usefulness criteria <span class="math inline"><em>U</em><em>C</em>_<em>p</em><em>a</em><em>r</em><em>e</em><em>n</em><em>t</em></span> and <span class="math inline"><em>U</em><em>C</em>_<em>v</em><em>a</em><em>r</em><em>i</em><em>e</em><em>t</em><em>y</em></span> potentially with a user supplied standardized selection intensity value <code>stdSelInt</code>. Output enables easy ranking of potential crosses. This function takes the matrices of snpeffects output</td>
+<td>Predict potentially for multiple traits, the means, variances and trait-trait covariances in a set of user-requested crosses-to-evaluate. Output enables easy ranking of potential crosses. Potentially computes the usefulness criteria, <span class="math inline"><em>U</em><em>C</em>_<em>p</em><em>a</em><em>r</em><em>e</em><em>n</em><em>t</em></span> and <span class="math inline"><em>U</em><em>C</em>_<em>v</em><em>a</em><em>r</em><em>i</em><em>e</em><em>t</em><em>y</em></span>. Provides users the option to predict cross usefulness (means and variances) on a linear multi-trait selection index, taking into account trait-trait covariances within each cross, using a set of user-supplied weights. Utilizes the functions <code><a href="reference/predCrossVars.html">predCrossVars()</a></code> and <code><a href="reference/predCrossMeans.html">predCrossMeans()</a></code> under-the-hood. This function is designed to work with <code><a href="reference/runGenomicPredictions.html">runGenomicPredictions()</a></code> , taking SNP-effects matrices output from that function.</td>
 </tr>
 </tbody>
 </table>
@@ -148,8 +169,8 @@
 </table>
 <table class="table">
 <colgroup>
-<col width="37%">
-<col width="62%">
+<col width="39%">
+<col width="60%">
 </colgroup>
 <thead><tr class="header">
 <th><strong>Cross-prediction functions</strong></th>

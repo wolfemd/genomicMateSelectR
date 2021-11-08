@@ -6,12 +6,7 @@
 \alias{genomicMateSelectR-package}
 \title{genomicMateSelectR: Genomic Mate Selection}
 \description{
-Predict the usefulness of a cross. Multi-trait selection index 
-  mean and variance prediction based on parental haplotypes, a genetic map, 
-  and marker effects. Implement cross-validation procedures to estimate the 
-  accuracy predicting the performance (breeding value, total genetic value 
-  including dominance) of previously unobserved individuals as well as cross 
-  means and variances. Successor package to predCrossVar.
+Predict the usefulness of a cross. Multi-trait selection index mean and variance prediction based on parental haplotypes, a genetic map, and marker effects. Implement cross-validation procedures to estimate the accuracy predicting the performance (breeding value, total genetic value including dominance) of previously unobserved individuals as well as cross means and variances. Successor package to predCrossVar.
 }
 \seealso{
 Useful links:
