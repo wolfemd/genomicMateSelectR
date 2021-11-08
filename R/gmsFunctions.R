@@ -833,9 +833,10 @@ predictCrosses<-function(modelType,
       dplyr::mutate(predVars=future_map(predVars,function(predVars,...){
 
         gmat<-predVars %>%
-          pivot_wider(names_from = "Trait2",
-                      values_from = "predVar") %>%
-          column_to_rownames(var = "Trait1") %>%
+          dplyr::rename(T1=Trait1,T2=Trait2) %>%
+          tidyr::pivot_wider(names_from = "T2",
+                             values_from = "predVar") %>%
+          column_to_rownames(var = "T1") %>%
           as.matrix
         gmat[lower.tri(gmat)]<-t(gmat)[lower.tri(gmat)]
         gmat %<>% .[names(SIwts),names(SIwts)]
