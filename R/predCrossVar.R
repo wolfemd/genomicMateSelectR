@@ -50,7 +50,7 @@ predCrossVars<-function(CrossesToPredict,modelType,
     if(predType=="VPM" & modelType=="AD"){ DomEffectList<-NULL; } }
 
   # Set-up a loop over the crosses
-  require(furrr);
+  suppressMessages(require(furrr));
   if(ncores>1){ plan(multisession, workers = ncores); }
     options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   crossespredicted<-CrossesToPredict %>%
@@ -160,6 +160,7 @@ predOneCross<-function(sireID,damID,modelType,
                           predVars=list()) }
   return(out_thiscross)
 }
+
 # INTERNAL FUNCTION - predict one variance-covariance component for one cross
 #' Title
 #'
@@ -342,7 +343,7 @@ predCrossMeans<-function(CrossesToPredict,predType,
   parents<-CrossesToPredict %$% union(sireID,damID)
   doseMat<-doseMat[parents,colnames(AddEffectList[[1]])]
 
-  require(furrr);
+  suppressMessages(require(furrr));
   if(ncores>1){ plan(multisession, workers = ncores); }
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
 
@@ -358,11 +359,13 @@ predCrossMeans<-function(CrossesToPredict,predType,
 
         predmeans<-CrossesToPredict %>%
           dplyr::left_join(tibble::tibble(sireID=rownames(parentGEBVs),
-                           sireGEBV=as.numeric(parentGEBVs))) %>%
+                                          sireGEBV=as.numeric(parentGEBVs)),
+                           by = "sireID") %>%
           dplyr::left_join(tibble::tibble(damID=rownames(parentGEBVs),
-                           damGEBV=as.numeric(parentGEBVs))) %>%
+                                          damGEBV=as.numeric(parentGEBVs)),
+                           by = "damID") %>%
           dplyr::mutate(predOf="MeanBV",
-                 predMean=(sireGEBV+damGEBV)/2)
+                        predMean=(sireGEBV+damGEBV)/2)
         return(predmeans) }))
     if(ncores>1){ plan(sequential) }
   }
