@@ -12,13 +12,19 @@ The package includes what might be too many extra functions. Indeed, it spans th
 
 ## Installation
 
-You can install [**genomicMateSelectR** package from my GitHub](https://www.github.com/wolfemd/) with:
+You can install [**genomicMateSelectR** package from my GitHub](https://www.github.com/wolfemd/genomicMateSelectR/) with:
 
 ``` {.r}
 devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master') 
 ```
 
-## HIGHLIGHTS
+## Get Started
+
+**CHECK OUT THE NEW VIGNETTE! --> [Getting starting predicting crosses](articles/start_here.html)**
+
+**More to come!**
+
+## Feature highlights
 
 -   Allows for parents to be of arbitrary heterozygosity/homozygosity (outbred or inbred)
 -   Predicts the **additive** *and* **dominance** genetic variances in the $F_1$
@@ -27,32 +33,31 @@ devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master')
 -   Support for multi-trait **selection index** via `selInd=TRUE` and `SIwts=` arguments.
 -   Functions to implement parent-wise cross-validation as described in the paper, also for "standard" cross-validation
 -   Handles simple (one trait, one cross) predictions, but built for complex (multi-trait, many crosses) scenarios.
--   Single estimate of marker effects from REML or MCMC (posterior mean effects --\> predicts "variance of posterior means") supported
+-   Single estimate of marker effects from REML or MCMC (posterior mean effects --> predicts "variance of posterior means") supported
 -   Posterior Mean Variance (PMV) *also* supported: the estimator of Lehermeier et al. 2017b which computes the predicted variance across a sample of marker effects, e.g. the thinned MCMC samples, usually stored on disk. For the multi-trait case, a multivariate Bayesian model is required as only a marker effects for each trait must be computed on the same Gibbs chain. *New version of cross variance predictions are not optimized for PMV so users wanted that are recommended to return to `predCrossVar`*.
 -   The relatively stable functions used to implement imputation and data cleaning for the NextGen Cassava Breeding GS programs.
 -   Various data helper functions
 
-## Core functions
+## Core function overview
 
-| **Genomic mate selection functions** | Top level functions to predict the performance of individual genotypes and the usefulness of potential crosses.                                                                                                                                                                                                                                                                                                                                                                                                 |
-|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `runGenomicPredictions()`        | Run GBLUP model using `sommer::mmer`, potentially on multiple traits. Returns genomic BLUPs (GEBV and GETGV). If requested, returns backsolved marker effects (equivalent to ridge regression / SNP-BLUP).                                                                                                                                                                                                                                                   |
-| `predictCrosses()`               | Predict potentially for multiple traits, the means, variances and trait-trait covariances in a set ofuser supplied crosses. If requested, computed the selection index means and variances. Computes the usefulness criteria $UC\_{parent}$ and $UC\_{variety}$ potentially with a user supplied standardized selection intensity value `stdSelInt`. Output enables easy ranking of potential crosses. This function takes the matrices of snpeffects output |
+| **Genomic mate selection functions** | Top level functions to predict the performance of individual genotypes and the usefulness of potential crosses.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `runGenomicPredictions()`            | Run GBLUP model using `sommer::mmer`, potentially on multiple traits. Returns genomic BLUPs (GEBV and GETGV). If requested, returns backsolved marker effects (equivalent to ridge regression / SNP-BLUP).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `predictCrosses()`                   | Predict potentially for multiple traits, the means, variances and trait-trait covariances in a set of user-requested crosses-to-evaluate. Output enables easy ranking of potential crosses. Potentially computes the usefulness criteria, $UC\_{parent}$ and $UC\_{variety}$. Provides users the option to predict cross usefulness (means and variances) on a linear multi-trait selection index, taking into account trait-trait covariances within each cross, using a set of user-supplied weights. Utilizes the functions `predCrossVars()` and `predCrossMeans()` under-the-hood. This function is designed to work with `runGenomicPredictions()` , taking SNP-effects matrices output from that function. |
 
 | **Cross-validation functions** | Functions to automate cross-validation                                                                                                               |
 |--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `runParentWiseCrossVal()`      | Assess the accuracy of predicted previously unobserved crosses.                                                                                      |
 | `runCrossVal()`                | Run k-fold cross-validation and assess the accuracy of predicted previously unobserved genotypes (individuals) based on the available training data. |
 
-
 | **Cross-prediction functions** | Functions that predict cross means and variances |
-|------------------------------|--------------------------------------------------|
-| `predCrossVars()`            | Predict cross variances and covariances                                                 |
-| `predCrossMeans()`           | Predict cross means                                                  |
+|--------------------------------|--------------------------------------------------|
+| `predCrossVars()`              | Predict cross variances and covariances          |
+| `predCrossMeans()`             | Predict cross means                              |
 
 ## NextGen Cassava GS pipeline functions
 
-In addition, a host of functions developed to support processing both the field trial data stored on the [Cassavabase](https://www.cassavabase.org/) and the genotyping/genomics data (imputation, file conversions). 
+In addition, a host of functions developed to support processing both the field trial data stored on the [Cassavabase](https://www.cassavabase.org/) and the genotyping/genomics data (imputation, file conversions).
 
 There are two "families" of functions distinguished in the [Reference](reference/index.html) as "cassavabase_pheno_pipeline" and "imputation_functions".
 
