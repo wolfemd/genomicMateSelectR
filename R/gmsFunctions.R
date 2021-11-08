@@ -191,7 +191,7 @@ runCrossVal<-function(blups,
                        GEBV=as.numeric(fit$U[[paste0("u:",gid,"a")]]$drgBLUP)) }
       if(modelType=="AD"){
         gblups %<>% # compute GEDD (genomic-estimated dominance deviation)
-          mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
+          dplyr::mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
                  # compute GETGV
                  GETGV=rowSums(.[,grepl("GE",colnames(.))])) }
 
@@ -207,7 +207,7 @@ runCrossVal<-function(blups,
           left_join(tibble(GID=rownames(ge_domval),GEdomval=as.numeric(ge_domval))) %>%
           left_join(tibble(GID=rownames(gebv),GEBV=as.numeric(gebv))) %>%
           # GETGV from GEadd + GEdomval
-          mutate(GETGV=GEadd+GEdomval)
+          dplyr::mutate(GETGV=GEadd+GEdomval)
 
         # free up the memory footprint
         rm(ga,addsnpeff,gd_star,domstar_snpeff,b,domsnpeff,allelesubsnpeff,
@@ -238,7 +238,7 @@ runCrossVal<-function(blups,
       accuracy<-gblups %>%
         left_join(validationData) %>%
         nest(predVSobs=c(GID,GBLUP,BLUP)) %>%
-        mutate(Accuracy=map_dbl(predVSobs,~cor(.$GBLUP,.$BLUP, use = 'complete.obs')))
+        dplyr::mutate(Accuracy=map_dbl(predVSobs,~cor(.$GBLUP,.$BLUP, use = 'complete.obs')))
       return(accuracy)
     },
     otherwise = NA)
@@ -246,19 +246,19 @@ runCrossVal<-function(blups,
     # Predict for one trait to each trait's training dataset
     if(modelType=="A"){
       predictions<-blups %>%
-        mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
+        dplyr::mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
                                                           splits=splits,gid=gid,
                                                           modelType=modelType,
                                                           A=A))) }
     if(modelType=="AD"){
       predictions<-blups %>%
-        mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
+        dplyr::mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
                                                           splits=splits,gid=gid,
                                                           modelType=modelType,
                                                           A=A,D=D))) }
     if(modelType=="DirDom"){
       predictions<-blups %>%
-        mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
+        dplyr::mutate(modelOut=map(TrainingData,~predictOneTrait(TrainingData=.,
                                                           splits=splits,gid=gid,
                                                           modelType=modelType,
                                                           A=A,D=D,
@@ -286,7 +286,7 @@ runCrossVal<-function(blups,
 
       if(all(names(SIwts) %in% colnames(gblups))){
         gblups %<>%
-          mutate(GBLUP=as.numeric((gblups %>%
+          dplyr::mutate(GBLUP=as.numeric((gblups %>%
                                      select(names(SIwts)) %>%
                                      as.matrix(.))%*%SIwts)) %>%
           select(predOf,GID,GBLUP)
@@ -297,7 +297,7 @@ runCrossVal<-function(blups,
           select(Trait,GID,BLUP) %>%
           pivot_wider(names_from = "Trait", values_from = "BLUP")
         validationData %<>%
-          mutate(BLUP=as.numeric((validationData %>%
+          dplyr::mutate(BLUP=as.numeric((validationData %>%
                                     select(names(SIwts)) %>%
                                     as.matrix(.))%*%SIwts)) %>%
           select(GID,BLUP)
@@ -306,15 +306,15 @@ runCrossVal<-function(blups,
           bind_rows(gblups %>%
                       left_join(validationData) %>%
                       nest(predVSobs=c(GID,GBLUP,BLUP)) %>%
-                      mutate(Trait="SELIND") %>%
+                      dplyr::mutate(Trait="SELIND") %>%
                       relocate(Trait,.before = 1) %>%
-                      mutate(Accuracy=map_dbl(predVSobs,~cor(.$GBLUP,.$BLUP,
+                      dplyr::mutate(Accuracy=map_dbl(predVSobs,~cor(.$GBLUP,.$BLUP,
                                                              use = 'na.or.complete'))))
       }
     }
 
     predictions %<>%
-      mutate(NcompleteTestPairs=map_dbl(predVSobs,function(predVSobs){
+      dplyr::mutate(NcompleteTestPairs=map_dbl(predVSobs,function(predVSobs){
         if(!is.null(predVSobs)){
           out<-na.omit(.) %>% nrow(.) } else { out<-NA }
         return(out) }))
@@ -328,7 +328,7 @@ runCrossVal<-function(blups,
   # quick test
   #cvsamples %<>% slice(1:2)
   cvsamples %<>%
-    mutate(accuracyEstOut=future_map(splits,
+    dplyr::mutate(accuracyEstOut=future_map(splits,
                                      ~fitModels(splits=.,
                                                 modelType=modelType,
                                                 blups=blups,
@@ -376,6 +376,7 @@ runCrossVal<-function(blups,
 #' Each element is named either A or D. Matrices supplied must match
 #' required by A, AD and DirDom models. e.g. grms=list(A=A,D=D).
 #' @param dosages dosage matrix. required only for modelType=="DirDom".
+#' Also required if getMarkEffs==TRUE.
 #' Assumes SNPs coded 0, 1, 2. Nind rows x Nsnp
 #' cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID
 #' @param gid string variable name used for genotype ID's in e.g. \code{blups} (default="GID")
@@ -436,7 +437,7 @@ runGenomicPredictions<-function(modelType,
     if(modelType=="DirDom"){
       randFormula<-paste0(randFormula,"+vs(",gid,"d_star,Gu=D)")
       f<-getPropHom(dosages)
-      trainingdata %<>% mutate(f=f[trainingdata$gid]) }
+      trainingdata %<>% dplyr::mutate(f=f[trainingdata$gid]) }
 
     # Fixed model statements
     fixedFormula<-ifelse(modelType=="DirDom",
@@ -503,7 +504,7 @@ runGenomicPredictions<-function(modelType,
 
     if(modelType=="AD"){
       gblups %<>% # compute GEDD (genomic-estimated dominance deviation)
-        mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
+        dplyr::mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
                # compute GETGV
                GETGV=rowSums(.[,grepl("GE",colnames(.))]))
       if(returnPEV){
@@ -523,7 +524,7 @@ runGenomicPredictions<-function(modelType,
         left_join(tibble(GID=rownames(ge_domval),GEdomval=as.numeric(ge_domval))) %>%
         left_join(tibble(GID=rownames(gebv),GEBV=as.numeric(gebv))) %>%
         # GETGV from GEadd + GEdomval
-        mutate(GETGV=GEadd+GEdomval)
+        dplyr::mutate(GETGV=GEadd+GEdomval)
       if(returnPEV){
         pev_a<-diag((fit$PevU[[paste0("u:",gid,"a")]]$drgBLUP))
         pev_dstar<-diag((fit$PevU[[paste0("u:",gid,"d_star")]]$drgBLUP))
@@ -550,10 +551,10 @@ runGenomicPredictions<-function(modelType,
 
     if(getMarkEffs==TRUE){
       # Add snpeffects to output
-      results %<>% mutate(allelesubsnpeff=list(allelesubsnpeff))
-      if(modelType=="AD"){ results %<>% mutate(domdevsnpeff=list(domdevsnpeff)) }
+      results %<>% dplyr::mutate(allelesubsnpeff=list(allelesubsnpeff))
+      if(modelType=="AD"){ results %<>% dplyr::mutate(domdevsnpeff=list(domdevsnpeff)) }
       if(modelType=="DirDom"){
-        results %<>% mutate(addsnpeff=list(addsnpeff),
+        results %<>% dplyr::mutate(addsnpeff=list(addsnpeff),
                             domstar_snpeff=list(domstar_snpeff),
                             domsnpeff=list(domsnpeff)) } }
     # this is to remove conflicts with dplyr function select() downstream
@@ -566,7 +567,7 @@ runGenomicPredictions<-function(modelType,
   if(ncores>1){ plan(multisession, workers = ncores); }
   options(future.globals.maxSize=+Inf); options(future.rng.onMisuse="ignore")
   predictions<-blups %>%
-    mutate(genomicPredOut=future_map(TrainingData,
+    dplyr::mutate(genomicPredOut=future_map(TrainingData,
                                      ~fitModel(trainingdata=.,
                                                modelType=modelType,
                                                getMarkEffs=getMarkEffs,
@@ -593,7 +594,7 @@ runGenomicPredictions<-function(modelType,
   if(selInd){
     # calc. SELIND and add to tidy output
     gblups %<>%
-      mutate(SELIND=as.numeric((gblups %>%
+      dplyr::mutate(SELIND=as.numeric((gblups %>%
                                   select(names(SIwts)) %>%
                                   as.matrix(.))%*%SIwts)) %>%
       relocate(SELIND, .after = predOf)
@@ -630,7 +631,9 @@ runGenomicPredictions<-function(modelType,
 #' @param dosages dosage matrix. required only for modelType=="DirDom".
 #' Assumes SNPs coded 0, 1, 2. Nind rows x Nsnp
 #' cols, numeric matrix, with rownames and colnames to indicate SNP/ind ID
-#' @param haploMat matrix of phased haplotypes, 2 rows per sample, cols = loci, {0,1}, rownames assumed to contain GIDs with a suffix, separated by "_" to distinguish haplotypes
+#' @param haploMat matrix of phased haplotypes, 2 rows per sample, cols = loci, {0,1},
+#' rownames assumed to contain GIDs with a suffix, separated by "_" to distinguish haplotypes.
+#' Currently, the haplotypes must be distinguished by the mandatory suffixes "_HapA" and "_HapB".
 #' @param recombFreqMat a square symmetric matrix with values = (1-2*c1), where c1=matrix of expected recomb. frequencies. The choice to do 1-2c1 outside the function was made for computation efficiency; every operation on a big matrix takes time.
 #' @param ncores number of cores
 #' @param nBLASthreads number of cores for each worker to use for multi-thread BLAS
@@ -685,7 +688,7 @@ predictCrosses<-function(modelType,
                                  recombFreqMat=recombFreqMat,
                                  ncores=ncores,nBLASthreads=nBLASthreads) %>%
       unnest(predVars) %>%
-      mutate(predOf="VarBV") }
+      dplyr::mutate(predOf="VarBV") }
   if(modelType=="AD"){
     predictedvars<-predCrossVars(CrossesToPredict=CrossesToPredict,
                                  AddEffectList=AlleleSubEffectList,
@@ -696,7 +699,7 @@ predictCrosses<-function(modelType,
                                  ncores=ncores,nBLASthreads=nBLASthreads)
     predictedvars %<>%
       unnest(predVars) %>%
-      mutate(predOf=ifelse(predOf=="VarA","VarBV","VarDD"))
+      dplyr::mutate(predOf=ifelse(predOf=="VarA","VarBV","VarDD"))
   }
   if(modelType=="DirDom"){
     predictedvarTGV<-predCrossVars(CrossesToPredict=CrossesToPredict,
@@ -715,7 +718,7 @@ predictCrosses<-function(modelType,
                                   ncores=ncores,nBLASthreads=nBLASthreads)
     predictedvars<-predictedvarBV %>%
       unnest(predVars) %>%
-      mutate(predOf="VarBV") %>%
+      dplyr::mutate(predOf="VarBV") %>%
       bind_rows(predictedvarTGV %>%
                   unnest(predVars)) }
   }
@@ -734,7 +737,7 @@ predictCrosses<-function(modelType,
     ### DO NOT predict MeanTGV ~but~ duplicate MeanBV as MeanTGV prediction
     ### there IS predVarTGV for this model, output predUC-TGV (i.e. UC_variety)
     predictedmeans %<>%
-      bind_rows(predictedmeans %>% mutate(predOf="TGV")) }
+      bind_rows(predictedmeans %>% dplyr::mutate(predOf="TGV")) }
 
   if(modelType=="DirDom"){
     ### predict MeanTGVs
@@ -761,7 +764,7 @@ predictCrosses<-function(modelType,
   if(predTheMeans){
   ## tidy pred. means ~~~~~~
   predictedmeans %<>%
-    mutate(predOf=gsub("Mean","",predOf),
+    dplyr::mutate(predOf=gsub("Mean","",predOf),
            Trait2=Trait) %>% # to match with variance pred. output
     rename(Trait1=Trait) %>% # to match with variance pred. output
     select(sireID,damID,predOf,Trait1,Trait2,predMean)
@@ -770,7 +773,7 @@ predictCrosses<-function(modelType,
     ## tidy pred. vars ~~~~~~
   predictedvars %<>%
     select(sireID,damID,Nsegsnps,predOf,Trait1,Trait2,predVar) %>%
-    mutate(predOf=gsub("Var","",predOf))
+    dplyr::mutate(predOf=gsub("Var","",predOf))
   if(modelType=="AD"){
     predictedvars %<>%
       filter(predOf=="BV") %>%
@@ -778,7 +781,7 @@ predictCrosses<-function(modelType,
                   pivot_wider(names_from = "predOf",
                               values_from = "predVar",
                               names_prefix = "predVar") %>%
-                  mutate(predVar=predVarBV+predVarDD,
+                  dplyr::mutate(predVar=predVarBV+predVarDD,
                          predOf="TGV") %>%
                   select(-predVarBV,-predVarDD))
   }
@@ -790,7 +793,7 @@ predictCrosses<-function(modelType,
                   pivot_wider(names_from = "predOf",
                               values_from = "predVar",
                               names_prefix = "predVar") %>%
-                  mutate(predVar=predVarA+predVarD,
+                  dplyr::mutate(predVar=predVarA+predVarD,
                          predOf="TGV") %>%
                   select(-predVarA,-predVarD))
   }
@@ -806,7 +809,7 @@ predictCrosses<-function(modelType,
       select(-Trait2) %>%
       spread(Trait1,predMean) %>%
       select(sireID,damID,predOf,all_of(traits)) %>%
-      mutate(SELIND=as.numeric((predictedmeans %>%
+      dplyr::mutate(SELIND=as.numeric((predictedmeans %>%
                                   select(-Trait2) %>%
                                   spread(Trait1,predMean) %>%
                                   select(all_of(names(SIwts))) %>%
@@ -815,7 +818,7 @@ predictCrosses<-function(modelType,
       pivot_longer(cols = c(SELIND,all_of(traits)),
                    names_to = "Trait1",
                    values_to = "predMean") %>%
-      mutate(Trait2=Trait1) %>%
+      dplyr::mutate(Trait2=Trait1) %>%
       select(sireID,damID,predOf,Trait1,Trait2,predMean)
     }
 
@@ -827,7 +830,7 @@ predictCrosses<-function(modelType,
     predictedvars %<>%
       nest(predVars=c(Trait1,Trait2,predVar)) %>%
       ## loop over each rep-fold-predOf-sireIDxdamID
-      mutate(predVars=future_map(predVars,function(predVars,...){
+      dplyr::mutate(predVars=future_map(predVars,function(predVars,...){
 
         gmat<-predVars %>%
           pivot_wider(names_from = "Trait2",
@@ -852,17 +855,18 @@ predictCrosses<-function(modelType,
   ## USEFULNESS CRITERIA ~~~~~~~~~~~~~~~~~~~~~~~~
   tidyPreds<-predictedvars %>%
     filter(Trait1==Trait2) %>%
-    inner_join(predictedmeans) %>%
+    inner_join(predictedmeans,
+               by = c("sireID", "damID", "predOf", "Trait1", "Trait2")) %>%
     rename(Trait=Trait1) %>%
     select(sireID,damID,Nsegsnps,predOf,Trait,predMean,predVar) %>%
-    mutate(predSD=sqrt(predVar),
+    dplyr::mutate(predSD=sqrt(predVar),
            predUsefulness=predMean+(stdSelInt*predSD)) }
   if(!predTheMeans & predTheVars){
     tidyPreds<-predictedvars %>%
       filter(Trait1==Trait2) %>%
       rename(Trait=Trait1) %>%
       select(sireID,damID,Nsegsnps,predOf,Trait,predVar) %>%
-      mutate(predSD=sqrt(predVar))
+      dplyr::mutate(predSD=sqrt(predVar))
   }
   if(predTheMeans & !predTheVars){
     tidyPreds<-predictedmeans %>%
