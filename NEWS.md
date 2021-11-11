@@ -23,3 +23,7 @@ See [predCrossVar](https://wolfemd.github.io/predCrossVar/), the OG codebase.
 -   [ ] More flexibility for the `crosses2predict()` function: reciprocal crosses? don't include selfs?
 
 -   [ ] Change `predCrossMeans()` so that it can accept either `dosages` or a `haploMat`. Currently, `predictCrosses()` requires users to supply both `dosages` *and* `haploMat` . Changing `predCrossMeans()` in this way will allow users of `predictCrosses()` to supply only the `haploMat` if they are predicting both cross means *and* variances, or only `dosages` if predicting only means.
+
+-   [ ] `modelType="AD_geno"` or something like that --> genotypic additive-dominance partition allowing prediction of $\mu_{TGV}$ in addition to $\mu_{BV}$ but *without* the genome-wide directional dominance part implemented in `modelType="DirDom"`.
+
+-   [ ] When you set `getMarkEffs=TRUE` in `runGenomicPredictions()`, tell the user that the function is erroring because they forgot to input the dosage matrix via `dosages=`.
