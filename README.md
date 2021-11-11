@@ -20,7 +20,10 @@ devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master')
 
 ## Get Started
 
-**CHECK OUT THE NEW VIGNETTE! --> [Getting starting predicting crosses](articles/start_here.html)**
+**CHECK OUT THE NEW VIGNETTES!**
+
+1. [Getting starting predicting crosses](articles/start_here.html)
+2. [Genomic (cross) predictions with non-additive effects](articles/non_additive_models.html)
 
 **More to come!**
 
