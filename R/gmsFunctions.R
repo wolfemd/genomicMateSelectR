@@ -149,7 +149,7 @@ runCrossVal<-function(blups,
       fixedFormula<-ifelse(modelType=="DirDom",
                            "drgBLUP ~1+f","drgBLUP ~1")
       # Fit genomic prediction model
-      require(sommer)
+      suppressMessages(require(sommer))
       fit <- sommer::mmer(fixed = as.formula(fixedFormula),
                           random = as.formula(randFormula),
                           weights = WT,
@@ -443,7 +443,7 @@ runGenomicPredictions<-function(modelType,
     fixedFormula<-ifelse(modelType=="DirDom",
                         "drgBLUP ~1+f","drgBLUP ~1")
     # Fit genomic prediction model
-    require(sommer)
+    suppressMessages(require(sommer))
     fit <- sommer::mmer(fixed = as.formula(fixedFormula),
                         random = as.formula(randFormula),
                         weights = WT,
@@ -555,8 +555,8 @@ runGenomicPredictions<-function(modelType,
       if(modelType=="AD"){ results %<>% dplyr::mutate(domdevsnpeff=list(domdevsnpeff)) }
       if(modelType=="DirDom"){
         results %<>% dplyr::mutate(addsnpeff=list(addsnpeff),
-                            domstar_snpeff=list(domstar_snpeff),
-                            domsnpeff=list(domsnpeff)) } }
+                                   domstar_snpeff=list(domstar_snpeff),
+                                   domsnpeff=list(domsnpeff)) } }
     # this is to remove conflicts with dplyr function select() downstream
     detach("package:sommer",unload = T); detach("package:MASS",unload = T)
     # return results
