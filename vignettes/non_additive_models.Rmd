@@ -1,0 +1,508 @@
+---
+title: "Genomic predictions with non-additive effects"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Genomic predictions with non-additive effects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(genomicMateSelectR)
+```
+
+# Genetic models implemented
+
+## Additive-only models
+
+Previously, in the [quick start vignette](articles/start_here.html), I showed how to use the `predictCrosses()` function with a single, additive genetic effect, by setting `modelType="A"`. We supplied example marker-effects as input via the `snpeffs=` argument.
+
+```{r}
+snpeffsA %>% dplyr::select(Trait,allelesubsnpeff)
+```
+
+These marker effects (`snpeffsA`) were derived from standard genome-wide marker regression (i.e. RR-BLUP, a.k.a. SNP-BLUP).
+
+Consider a diploid population with *n* individuals genotyped at *p* biallelic genomic loci.
+
+The standard genomic mixed-model is of the form:
+
+$$\boldsymbol{y} =\boldsymbol{X\beta} +\boldsymbol{Z\alpha} +\boldsymbol{\epsilon}$$
+
+In this linear model, the $n \times 1$ vector of phenotypic observations, $\boldsymbol{y}$ is modeled according to a combination of genetic and non-genetic effects. Fixed experimental design-related effects estimates are given by $\boldsymbol{\beta}$ and its corresponding incidence matrix $\boldsymbol{X}$ ($[ n \times N_{fixed}]$) where $N_{fixed}$ is the number of fixed factors. The elements of the $[n \times p]$ matrix $\boldsymbol{Z}$ contains column-centered marker genotypes:
+
+$$\begin{matrix} z_{ij} = \begin{cases} 
+2-2p_{j} & A_1A_1\\
+1-2p_{j} & A_1A_2\\
+0-2p_{j} & A_2A_2
+\end{cases}\end{matrix}$$
+
+Here, $p_j$ and $q_j$ are the population frequencies for the $A_1$ and $A_2$ alleles, respectively for the *j*th SNP marker.
+
+The marker-effects ($\boldsymbol{\alpha}$) are fitted as independent and identically distributed (*i.i.d.*) random-effects with mean zero and effects-variance $\sigma^2_{\alpha}$, *i.e.* $\alpha \sim N(0,\sigma^2_{\alpha})$.
+
+As specified $\alpha$ represent allele-substitution effects.
+
+Genomic estimated breeding values (GEBV), which are individual-level (rather than marker-level) selection criteria, can therefore be predicted as $\boldsymbol{\hat{g}}_{BV} =\boldsymbol{Z\hat{\alpha}}$ based on this model.
+
+## Models including dominance
+
+We focus in this package, thus far, on dominance effects. Epistasis could be added, in principle.
+
+It is worth reviewing some subtle but important differences between statistical models for partitioning the effect of a locus on a phenotype into "additive" and "dominance" components. `genomicMateSelectR`'s higher-level functions (`predictCrosses()` and `runGenomicPredictions()` are careful about this; I want to make the user aware.
+
+To really understand the matter, there is a strong, recent literature on non-additive effects in genomic prediction, I recommend reviewing: @Vitezica2013; @Varona2018; @Xiang2016; @Wolfe2021.
+
+There are two partitions of additive and dominance effects used by `genomicMateSelectR`, one for `modelType="AD"`, the other relevant for `modelType="DirDom"`.
+
+### Classical (statistical)
+
+Vitezica *et al.* [-@Vitezica2013] showed the "classical" model specification, which partitions the total genotypic effect into **allele substitution** and **dominance deviations**.
+
+$$\boldsymbol{y} =\boldsymbol{X\beta} +\boldsymbol{Z\alpha} +\boldsymbol{Wd} +\boldsymbol{\epsilon}$$
+
+$\boldsymbol{Z\alpha}$ are as in `modelType="A"`, column-centered dosages and allele substitution effects.
+
+The new matrix of column-centered dominance codings, $\boldsymbol{W}$ contains:
+
+$$\begin{matrix} w_{ij} = \begin{cases}
+-2q_j^2 & A_1A_1\\
+2p_jq_j & A_1A_2\\
+-2p_j^2 & A_2A_2
+\end{cases}\end{matrix}$$
+
+The dominance deviation marker-effects ($\boldsymbol{d}$) are also fitted as *i.i.d.* random, $d \sim N(0,\sigma^2_{d})$. The corresponding individual-level, genome-wide prediction, the genomic estimated dominance deviation (**GEDD**) is therefore $\boldsymbol{\hat{g}}_{DD} =\boldsymbol{W\hat{d}}$ and we can predict the total merit or performance (rather than just the breeding value) of an individual as **GETGV = GEBV + GEDD**.
+
+This model is implemented by `genomicMateSelectR` when the user chooses `modelType="AD"`.
+
+### Genotypic (biological)
+
+There is a subtly different model models biological dominance effects, by using a 0, 1, 0 coding of genotypes $A_1A_1$, $A_1A_2$ and $A_2A_2$, respectively.
+
+$$\boldsymbol{y} = \boldsymbol{X\beta} + \boldsymbol{Za} + \boldsymbol{\Gamma} \boldsymbol{d}^* + \boldsymbol{\epsilon}$$ The dominance coding in the matrix $\boldsymbol{\Gamma}$ is
+
+$$\begin{matrix} \gamma_{ij} = \begin{cases} 
+(0-2p_{j}q_{j}) & A_1A_1\\
+(1-2p_{j}q_{j}) & A_1A_2\\
+(0-2p_{j}q_{j}) & A_2A_2
+\end{cases} \end{matrix}$$
+
+The coding for the additive term ($\boldsymbol{Z}$) is the same as all previous models. However, the resulting set of *genotypic additive-effects* ($\boldsymbol{a}$) and the corresponding *genotypic dominance-effects* $\boldsymbol{d^*}$ ***are not*** allele substitution or dominance deviation effects. In `genomicMateSelectR` the genomic estimated values predicted by this model are referred to as: **GETGV = GEadd + GEdom**.
+
+Allele substitution effects ($\alpha$) and subsequently **GEBV** can be recovered from this model via:
+
+$$\boldsymbol{\alpha} =\boldsymbol{a} +\boldsymbol{d}(\boldsymbol{q}-\boldsymbol{p})$$
+
+However, this is inefficient. In fact, currently, `genomicMateSelectR` does not both to implement the "genotypic" model as it's own `modelType=`; but its on the 'possibly to-do' list.
+
+Instead the "genotypic" model is used with small extension in an implementation of Xiang et al. (-@Xiang2016 )'s model with directional dominance.
+
+### Directional dominance
+
+`genomicMateSelectR` includes a third `modelType="DirDom"` .
+
+Genomic mixed-model with a genome-wide directional dominance term:
+
+$$\boldsymbol{y} = \boldsymbol{X\beta} + \boldsymbol{f}b + \boldsymbol{Za} + \boldsymbol{\Gamma} \boldsymbol{d}^* + \boldsymbol{\epsilon}$$
+
+This is the "genotypic" model with an additive fixed-effect covariate, $\textbf{f}$, a vector of the individual-level genome-wide proportion of loci that are homozygous. The fixed-effect estimate $\boldsymbol{b}$ is the estimated linear effect of overall homozygosity, interpreted as inbreeding depression or heterosis depending on its direction relative to each trait.
+
+`genomicMateSelectR` actually incorporates the directional-dominance effects into predictions of **GEBV**, **GETGV** as well as cross-means and variances by dividing $b$ by the number of effects ($p$) and subtracting that value from the vector of dominance effects, to get $\boldsymbol{d} = \boldsymbol{d}^*-\frac{b}{p}$. The notation here isn't perfect, because $\boldsymbol{d}$ *is not* the classical dominance deviation effect, which I notated the same. Instead, here $\boldsymbol{d}$ is the vector of genotypic dominance effects with a potentially non-zero mean dominance value; the directional-dominance term is factored in.
+
+# Implementation using `runGenomicPredictions()` in `genomicMateSelectR`
+
+There are many options for fitting the mixed-models described above, using software both in (and out) of R.
+
+IMHO, the best R package, for the frequentist, remains to be the `sommer` R package @covarrubias-pazaran2016. `sommer` is [available on CRAN](https://cran.r-project.org/web/packages/sommer/index.html) and has a number of excellent vignettes to get new users started. `sommer`'s primary mixed-model solver `mmer()` is almost as flexible as `asreml`, but free and open-source. Downside is, it is slower and more memory intensive.
+
+`genomicMateSelectR`'s genomic prediction function uses `sommer::mmer()` under the hood. The function `runGenomicPredictions()` will implement, across potentially multiple traits, univariate genomic predictions, with error-variances weighted according to user-specific weights.
+
+## Input: BLUPs or other phenotypes
+
+`runGenomicPredictions()` requires phenotypes (response data) for genomic predictions via the argument `blups=`.
+
+An example input `blups` is shown below:
+
+```{r}
+blups
+```
+
+The tibble `blups` has one row per trait, one column **Trait** with chr-string of trait labels, second column is called **TrainingData** and is list-type with each element containing a `tibble`. For example:
+
+```{r}
+blups$TrainingData[[1]] %>% str
+```
+
+Four columns, all required in each tibble inside `blups$TrainingData`:
+
+-   `GID`: genotype ID, chr-string
+-   `drgBLUP`: the primary response variable. Stands for de-regressed BLUPs, but users can put any single-value-per-GID that they chose as phenotypic training data.
+-   `BLUP`: used by the cross-validation functions (`runCrossVal()` and `runParentWiseCrossVal()` as a slot for validation data. Typically I use the not-deregressed BLUPs. Users can simply have the columns `drgBLUP==BLUP` if they wish.
+-   `WT`: Weights for the error-variance. Used directly as input for `sommer::mmer(weights = )` argument. Users can simply input a column of 1's for an un-weighted prediction.
+
+Typically, I implement de-regressed BLUPs as
+
+$$drgBLUP = \frac{BLUP}{REL}$$
+
+where $REL$ is the reliability of the BLUP, $REL=1-\frac{PEV}{\sigma^2_g}$. $\sigma^2_g$ as estimated in the mixed-model.
+
+and the weights as
+
+$WT = \frac{1-H^2}{(0.1+\frac{1-REL}{REL})*H^2}$, according to @Garrick2009.
+
+As indicated above, users are free to supply alternative weights or use an unweighted analysis.
+
+In the future, I can make this more flexible. Users wanting a single-stage or any other flavor of approach for obtaining marker effects and genomic BLUPs can do so and bypass `runGenomicPredictions()` and format their marker-effects for `predictCrosses()`.
+
+## Input: genomic relationship matrices
+
+Each of the models discussed above is a genome-wide marker regression; a RR-BLUP, aka SNP-BLUP model. Each model has an exact equivalent genomic-BLUP (G-BLUP model) formed by constructing a genomic relationship matrix (**GRM**) from column-centered additive and dominance coding matrices described above [@Vitezica2013; @Varona2018]. In fact, `runGenomicPredictions()` fits GBLUP-style models using user-supplied **GRM**s via the argument `grms=`. By default, the argument `getMarkEffs=FALSE` is set, a GBLUP model is fit, and genomic BLUP values, e.g. **GEBV** and **GEDD** are returned to the user without marker-effects.
+
+```{r}
+doseMat %>% str
+```
+
+```{r}
+doseMat[1:3,1:8]
+```
+
+With the `doseMat` we can easily construct the **GRMs** we need using the `kinship()` function built-into `genomicMateSelectR`.
+
+```{r}
+A<-kinship(doseMat,type = "add")
+dim(A)
+```
+
+```{r}
+A[1:5,1:5]
+```
+
+```{r}
+summary(diag(A))
+```
+
+## Fit an additive model, no marker effects
+
+As is we have the needed input to `runGenomicPredictions()`.
+
+Kinship matrices should be formatted as a named-list of matrices. Depending on the model, either only an additive relationship matrix labeled "A", or an additive *and* a dominance matrix (labeled "D").
+
+```{r}
+grms<-list(A=A)
+grms %>% str
+```
+
+```{r}
+SIwts<-c(0.75,0.25) %>% `names<-`(.,c("Trait1","Trait2"))
+gpredsA<-runGenomicPredictions(modelType = "A", 
+                               selInd = T, SIwts = SIwts,
+                               blups = blups, grms = grms)
+```
+
+Here's what `runGenomicPredictions()` returns by default.
+
+```{r}
+gpredsA
+```
+
+The first element **gblups** is a tibble with genomic BLUPs (GEBV in this case) for each trait, and since we supplied `SIwts`, the GEBV computed on the selection index, labeled **SELIND**.
+
+```{r}
+gpredsA$gblups[[1]]
+```
+
+The other element of the output (**genomicPredOut**) contains `data.frame`s of the fixed-effect estimates (**fixeffs**) and variance component estimates (**varcomps**) from the model. The **gblups** column here just has a more raw version of the GEBV.
+
+```{r}
+gpredsA$genomicPredOut[[1]]
+```
+
+## Returning marker effects with `getMarkEffs=TRUE`
+
+Setting `getMarkEffs=TRUE` in `runGenomicPredictions()` will generate RR-BLUP solutions for SNP-effects.
+
+The helper function `backsolveSNPeff()` is used.
+
+$$Z^T(ZZ^T)^{-1}g$$
+
+Where \$\boldsymbol{Z} are centered allele dosages or dominance genotype codings, and \boldsymbol{g} are the corresponding GBLUP solutions.
+
+```{r}
+gpredsA<-runGenomicPredictions(modelType = "A", 
+                               selInd = T, SIwts = SIwts,
+                               getMarkEffs = TRUE,dosages = doseMat,
+                               blups = blups, grms = grms)
+```
+
+```{r}
+gpredsA
+```
+
+```{r}
+gpredsA$genomicPredOut[[1]]
+```
+
+Allele-substitution effects matrix for each trait is now in the list-column **allelesubsnpeff**.
+
+## Run non-additive genomic predictions
+
+### `modelType="AD"`
+
+As mentioned above, `modelType="AD"` effects an additive-plus-dominance model using the "classical" partition. Predictions of GBLUPs (SNP-BLUPs / marker-effects) will correspond to **GEBV** (**allele substitution effects**).
+
+We need first to add the correct **dominance relationship matrix**, constructed with `kinship()` to `grms`:
+
+```{r}
+D<-kinship(doseMat,type = "domClassic")
+grms[["D"]]<-D
+```
+
+```{r}
+gpredsAD<-runGenomicPredictions(modelType = "AD", 
+                                selInd = T, SIwts = SIwts,
+                                getMarkEffs = TRUE,dosages = doseMat,
+                                blups = blups, grms = grms)
+```
+
+```{r}
+gpredsAD$gblups[[1]] %>% head
+```
+
+Note that for each **GID** there are now two rows, distinguished by the **predOf** column, as either **GEBV** or **GETGV** (the **GEBV** + **GEDD**).
+
+```{r}
+gpredsAD$genomicPredOut[[1]]
+```
+
+Now two sets of marker effects are reported: **allelesubsnpeff** and **domdevsnpeff**.
+
+### `modelType="DirDom"`
+
+The last model, implements an additive-plus-directional dominance model as detailed above. The "DirDom" model adds the potential for a genome-wide inbreeding depression (or heterosis effect).
+
+To do this correctly, we need to switch to the "genotyped" parameterization of dominance (see above, and @Vitezica2013.
+
+Simply change the `type=` argument to "domGenotypic" in the `kinship()` function to create a **genotypic dominance relationship matrix**
+
+```{r}
+D<-kinship(doseMat,type = "domGenotypic")
+# Replace the previous "D" matrix, but don't change the name
+# grms list input must have names "A" or "D".
+grms[["D"]]<-D
+```
+
+That's the only different input that is needed.
+
+```{r}
+gpredsDirDom<-runGenomicPredictions(modelType = "DirDom", 
+                                    selInd = T, SIwts = SIwts,
+                                    getMarkEffs = TRUE,dosages = doseMat,
+                                    blups = blups, grms = grms)
+```
+
+```{r}
+gpredsDirDom$gblups[[1]] %>% head
+```
+
+Note: no difference in structure of output **gblups**. For this model, rather than using the genomic BLUPs computed by the initial GBLUP model, `runGenomicPredictions()` first backsolves for the SNP-effects, then adds the genome-wide directional dominance effect. Because of this approach, we can also recover the allele substitution effects by doing $\alpha = a + d(q-p)$was added to the SNP-effects and then genomic BLUPs were calculated to get GEBV and GETGV that include this effect.
+
+The estimated genome-wide directional dominance effect itself is available in the **fixeffs** column:
+
+```{r}
+gpredsDirDom$genomicPredOut[[1]]$fixeffs[[1]]
+```
+
+The SNP effects themselves:
+
+```{r}
+gpredsDirDom$genomicPredOut[[1]]
+```
+
+Marker effects reported by the **DirDom** model:
+
+-   `allelesubsnpeff`: allele substition effects with genome-wide directional dominance effect added
+-   `addsnpeff`: genotypic additive effect
+-   `domstar_snpeff`: genotypic dominance effect
+-   `domsnpeff`: genotypic dominance effects with genome-wide directional dominance effect added
+
+# Cross predictions with `genomicMateSelectR`
+
+## Theory
+
+See @Wolfe2021 for full details.
+
+Briefly:
+
+**Predict cross mean breeding values**
+
+$$\mu_{BV}=\frac{GEBV_{P1}+GEBV_{P2}}{2}$$
+
+**Predict cross mean total genetic value**
+
+(also called **genomic prediction of cross performance** or **GPCP** by @werner2020) $$\mu_{TGV}=\sum\limits_{k=1}^p a_k(p_{ik} - q_{ik} - y_k) + d_k[2p_{ik}q_{ik} + y_k(p_{ik}-q_{ik})]$$
+
+See [@Toro2010; @Varona2018].
+
+Here $p_{ik}$ and $q_{ik}$ are the allele frequencies of the counted (alternative) and the non-counted (reference-genome) allele, respectively, for one of the two parents (indexed by $i$). The difference in frequency between the parent one (indexed by $i$) and the parent two (indexed by $j$) is ,$y_k = p_{ik} - p_{jk}$ and the summation is over the $p$ markers indexed by $k$. Note that $a_k$ is the average effect and *not* the allele substitution effect, $\alpha$.
+
+The genotypic parameterization for dominance should be to get marker effects to predict $\mu_{TGV}$ in this way. In fact, for this reason, `predictCrosses()` only returns $\mu_{TGV}$ predictions when `modelType="DirDom"`.
+
+**Predict the genetic variance among offspring**
+
+$$\hat{\sigma}^{2}_{BV} = \boldsymbol{\alpha}^{T}\boldsymbol{D}\boldsymbol{\alpha}$$ $$\hat{\sigma}^{2}_{DD} = \boldsymbol{d}^{T}\boldsymbol{D}^2\boldsymbol{d}$$
+
+Where $\boldsymbol{D}^2 =\boldsymbol{D}\odot\boldsymbol{D}$, $\odot$ indicating element-wise (Hadamard) multiplication of $\boldsymbol{D}$, having the effect of squaring all elements.
+
+$$\hat{\sigma}^{2}_{TGV} = \hat{\sigma}^{2}_{BV} +\hat{\sigma}^{2}_{DD}$$
+
+The $p\times p$ variance-covariance matrix, $\boldsymbol{D}$, is the expected linkage disequilibrium among full-siblings by considering the expected pairwise recombination frequency and each parent's haplotype phase.
+
+$$\boldsymbol{D}_{P_1}^{gametes}=(1-2\boldsymbol{c})\odot\boldsymbol{D}_{P_1}^{haplos}$$
+
+$$\boldsymbol{D}_{P_2}^{gametes}=(1-2\boldsymbol{c})\odot\boldsymbol{D}_{P_2}^{haplos}$$
+
+$$\boldsymbol{D}_{P_1\times P_2}^{genotypes} =\boldsymbol{D}_{P_1}^{gametes} +\boldsymbol{D}_{P_2}^{gametes}$$
+
+$\boldsymbol{D}_{P_1}^{haplos}$ and $\boldsymbol{D}_{P_2}^{haplos}$ are simply the $p\times p$ covariance matrices associated with each parent's respective $2\times p$ haplotype matrix ($\boldsymbol{H}_{P_{1} or P_{2}}$), where elements are 1 if the counted allele is present, 0 otherwise.
+
+$$\boldsymbol{D}^{haplos} =\frac{1}{2}\boldsymbol{H}^T\boldsymbol{H} -\boldsymbol{p}\boldsymbol{p}^T$$ Where $\boldsymbol{p}$ is a vector of within-individual, per-SNP allele frequencies.
+
+The $p\times p$ pairwise recombination frequencies matrix is $\boldsymbol{c}$ and can be derived from a genetic map. $\boldsymbol{D}_{P_1}^{gametes}$ and $\boldsymbol{D}_{P_2}^{gametes}$ are the covariance matrices for each parents pool of possible gametes, whose covariances sum to give the expected covariances genotypes in the cross, $\boldsymbol{D}_{P_1\times P_2}^{genotypes}$. The genetic variances $\hat{\sigma}^{2}_{BV}$ and $\hat{\sigma}^{2}_{DD}$ are thus predicted as above by using $\boldsymbol{D} = \boldsymbol{D}_{P_1\times P_2}^{genotypes}$.
+
+See [@Lehermeier2017].
+
+**Predicting the trait-trait co-variances among offspring**
+
+Consider two traits, $T1$ and $T2$
+
+Variance for $T1$:
+$$\sigma^2_{T1}=\boldsymbol{\alpha}_{T1}^{T}\boldsymbol{D}\boldsymbol{\alpha}_{T1}$$
+
+Variance for $T2$:
+$$\sigma^2_{T2}=\boldsymbol{\alpha}_{T2}^{T}\boldsymbol{D}\boldsymbol{\alpha}_{T2}$$
+
+Covariance between $T1$ and $T2$:
+$$\sigma_{T1,T2}=\boldsymbol{\alpha}_{T1}^{T}\boldsymbol{D}\boldsymbol{\alpha}_{T2}$$
+
+Apply to dominance by substituting $\boldsymbol{\alpha}$ with $\boldsymbol{d}$ and squaring elements of $\boldsymbol{D}$.
+
+See [@Neyhart2019]. 
+
+**Predict means and variances among offspring for the selection index**
+
+Selection index mean:
+$$\mu_{SI} =\boldsymbol{w}^T\hat{\boldsymbol{g}}_{BV}$$
+
+Selection index variance:
+$$\sigma^2_{SI} =\boldsymbol{w}^T\boldsymbol{G}\boldsymbol{w}$$
+
+The $n\times T$ matrix $\hat{\boldsymbol{g}}_{BV}$ contains the GEBV for each trait and the $T\times 1$ vector $\boldsymbol{w}$ are the index weights. The $T\times T$ matrix $\boldsymbol{G}$ is the additive (or total) genetic variance-covariance matrix for traits on the index.
+
+$$\boldsymbol{G} = \begin{bmatrix} 
+\sigma^2_{Trait_1,Trait_1} & \hdots & \sigma_{Trait_1,Trait_T}\\
+\vdots & \ddots & \vdots \\
+\sigma_{Trait_1,Trait_T} & \hdots & \sigma^2_{Trait_T,Trait_T}\end{bmatrix}$$
+
+See [@Bonk2016b].
+
+**Predict the (selection-index) usefulness of the cross** (**the superior progeny mean**)
+
+$$\boldsymbol{UC}_{SI}=\boldsymbol{\mu}_{SI} +\boldsymbol{i}_{SI}\times\boldsymbol{\sigma}_{SI}$$
+
+Distinguish two types of usefulness, concerning breeding value (allele substitution effects) versus total genetic value (total genetic effects, additive + dominance). 
+
+$$\hat{UC}_{parent} = \hat{\mu}_{BV}+i\times \hat{\sigma}_{BV}$$
+$$\hat{UC}_{variety} = \hat{\mu}_{TGV}+i\times \hat{\sigma}_{TGV}$$
+For simplicity, dropped the "SI" notation.
+
+
+## Example
+
+In the [previous vignette](articles/start_here.html), I covered the formatting for inputs to `predictCrosses()` when the `modelType="A"`. Below, I'll highlight the features and implementation of the non-additive models.
+```{r}
+# recombFreqMat
+recombFreqMat<-genmap2recombfreq(genmap, nChr = 2)
+recombFreqMat<-1-(2*recombFreqMat)
+
+
+# Crosses to predict
+set.seed(42);
+parents<-sample(x = snpeffsA$gblups[[1]]$GID, size = 5, replace = F)
+CrossesToPredict<-crosses2predict(parents)
+
+```
+
+### `modelType="AD"
+```{r}
+data(doseMat)
+data(haploMat)
+predVarsAD<-predictCrosses(modelType = "AD",
+                           selInd = TRUE, SIwts = SIwts,
+                           CrossesToPredict=CrossesToPredict,
+                           snpeffs=gpredsAD$genomicPredOut[[1]],
+                           dosages=doseMat,
+                           haploMat=haploMat,recombFreqMat=recombFreqMat)
+```
+```{r}
+predVarsAD$tidyPreds[[1]] %>% head
+```
+For `modelType="AD"` there should be two rows per cross per trait and in this case the column **Trait** also contains predictions on the selection index (**SELIND**). 
+
+```{r}
+predVarsAD$tidyPreds[[1]] %>% arrange(Trait,sireID,damID,predOf) %>% head
+```
+```{r}
+predVarsAD$rawPreds[[1]]$predMeans[[1]] %>% 
+  arrange(Trait,sireID,damID,predOf) %>% head
+```
+```{r}
+predVarsAD$rawPreds[[1]]$predVars[[1]] %>% 
+  arrange(sireID,damID,predOf,Trait1,Trait2) %>% slice(1:8)
+
+```
+
+### `modelType="DirDom"
+
+For the **DirDom** model, not much change is needed.
+
+One note: if you got marker effects using `runGenomicPredictions(modelType="DirDom")` then the SNP-effects generated, used below (`gpredsDirDom$genomicPredOut[[1]]`) are all you need. If you want to supply your own marker effects, they input must at a bare minimum contain the columns: **Trait**, **allelesubsnpeff**, **addsnpeff** and **domsnpeff**.
+
+```{r}
+gpredsDirDom$genomicPredOut[[1]] %>% dplyr::select(Trait,allelesubsnpeff,addsnpeff,domsnpeff)
+```
+
+```{r}
+predVarsDirDom<-predictCrosses(modelType = "DirDom",
+                               selInd = TRUE, SIwts = SIwts,
+                               CrossesToPredict=CrossesToPredict,
+                               snpeffs=gpredsDirDom$genomicPredOut[[1]],
+                               dosages=doseMat,
+                               haploMat=haploMat,recombFreqMat=recombFreqMat)
+```
+
+Output in same format as `modelType="AD"`, e.g.:
+```{r}
+predVarsDirDom$tidyPreds[[1]] %>% str
+```
+
+
+## Additional `predictCrosses()` features 
+
+- Parallel by family (`ncores`)
+- Multi-core matrix algrebra (OpenBLAS) usage (if your R compilation is linked to one) (`nBLASthreads`)
+- Toggle cross mean and cross variance predictions on-vs-off: `predTheMeans` and `predTheVars`.
+
+# Next vignettes
+
+- [ ] Cross-validation
+- [ ] Further under the hood: functions `predCrossVars()` and `predCrossMeans()` (used by `predictCrosses()`)
+
+# References

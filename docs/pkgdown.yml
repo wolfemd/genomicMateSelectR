@@ -2,6 +2,7 @@ pandoc: 2.14.0.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  non_additive_models: non_additive_models.html
   start_here: start_here.html
-last_built: 2021-11-08T13:04Z
+last_built: 2021-11-11T21:10Z
 

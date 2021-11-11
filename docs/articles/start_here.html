@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/non_additive_models.html">Genomic predictions with non-additive effects</a>
+    </li>
+    <li>
       <a href="../articles/start_here.html">Getting started predicting crosses</a>
     </li>
   </ul>
@@ -313,7 +316,7 @@
                            haploMat<span class="op">=</span><span class="va">haploMat</span>,
                            recombFreqMat<span class="op">=</span><span class="va">recombFreqMat</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Predicting cross variance parameters"</span>
-<span class="co">#&gt; [1] "Done predicting fam vars. Took 0.06 mins for 15 crosses"</span>
+<span class="co">#&gt; [1] "Done predicting fam vars. Took 0.07 mins for 15 crosses"</span>
 <span class="co">#&gt; [1] "Predicting cross means"</span>
 <span class="co">#&gt; [1] "Computing SELECTION INDEX means and variances."</span></code></pre></div>
 <p>Now we can quickly examine the output.</p>
@@ -378,7 +381,7 @@
 <span class="co">#&gt;   .. ..$ sireID     : chr [1:45] "49" "49" "49" "49" ...</span>
 <span class="co">#&gt;   .. ..$ damID      : chr [1:45] "49" "49" "49" "153" ...</span>
 <span class="co">#&gt;   .. ..$ Nsegsnps   : int [1:45] 22 22 22 46 46 46 48 48 48 53 ...</span>
-<span class="co">#&gt;   .. ..$ ComputeTime: Named num [1:45] 0.246 0.246 0.246 0.207 0.207 0.207 0.215 0.215 0.215 0.226 ...</span>
+<span class="co">#&gt;   .. ..$ ComputeTime: Named num [1:45] 0.268 0.268 0.268 0.246 0.246 ...</span>
 <span class="co">#&gt;   .. .. ..- attr(*, "names")= chr [1:45] "elapsed" "elapsed" "elapsed" "elapsed" ...</span>
 <span class="co">#&gt;   .. ..$ Trait1     : chr [1:45] "Trait1" "Trait2" "Trait1" "Trait1" ...</span>
 <span class="co">#&gt;   .. ..$ Trait2     : chr [1:45] "Trait1" "Trait2" "Trait2" "Trait1" ...</span>
@@ -416,10 +419,11 @@
 <h2 class="hasAnchor">
 <a href="#additional-vignettes" class="anchor"></a>Additional vignettes</h2>
 <p>In subsequent vignettes I will provide:</p>
+<ol style="list-style-type: decimal">
+<li>Learn the <a href="articles/non_additive_models.html">features for incorporating non-additive effects into predictions</a>: <code>modelType="AD"</code>, <code>modelType="DirDom</code> and their correct useage. Includes a theoretical introduction, followed by a demonstration of the use of <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code> and <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> to accomplish predictions of individual and cross performances.</li>
+</ol>
 <ul>
-<li>a full feature walkthrough for predicting crosses (<code>modelType="AD"</code>, <code>modelType="DirDom</code>),</li>
-<li>use of the functions for cross-validation (<code><a href="../reference/runCrossVal.html">runCrossVal()</a></code>, <code><a href="../reference/runParentWiseCrossVal.html">runParentWiseCrossVal()</a></code>,</li>
-<li>genomic prediction (<code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code>),</li>
+<li>Use of the functions for cross-validation (<code><a href="../reference/runCrossVal.html">runCrossVal()</a></code>, <code><a href="../reference/runParentWiseCrossVal.html">runParentWiseCrossVal()</a></code>,</li>
 <li>possibly the imputation and breeding data processing helper functions (wrappers for e.g. Beagle and code for BreedBase data cleaning).</li>
 </ul>
 </div>

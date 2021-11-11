@@ -230,6 +230,7 @@ crossPreds$rawPreds[[1]] %>% str
 At `crossPreds$rawPreds[[1]]$predMeans` are the predictions for cross means, and at `crossPreds$rawPreds[[1]]$predVars` are the predictions for cross variances.
 
 For sake of example, we should make a plot (predMean vs. predSD), for "fun" and then make a selection of the top 5 crosses, based on their predicted usefulness on the selection index:
+
 ```{r}
 crossPreds$tidyPreds[[1]] %>% 
   dplyr::filter(Trait=="SELIND") %>% 
@@ -237,6 +238,7 @@ crossPreds$tidyPreds[[1]] %>%
                                  color=predUsefulness, size=predUsefulness)) + 
   ggplot2::geom_point() + ggplot2::theme_bw()
 ```
+
 ```{r}
 crossPreds$tidyPreds[[1]] %>% 
   dplyr::filter(Trait=="SELIND") %>% 
@@ -252,7 +254,7 @@ That concludes the quick demo, focused on input formatting and output contents, 
 
 In subsequent vignettes I will provide:
 
--   a full feature walkthrough for predicting crosses (`modelType="AD"`, `modelType="DirDom`),
--   use of the functions for cross-validation (`runCrossVal()`, `runParentWiseCrossVal()`,
--   genomic prediction (`runGenomicPredictions()`),
+1.  Learn the [features for incorporating non-additive effects into predictions](articles/non_additive_models.html): `modelType="AD"`, `modelType="DirDom` and their correct useage. Includes a theoretical introduction, followed by a demonstration of the use of `runGenomicPredictions()` and `predictCrosses()` to accomplish predictions of individual and cross performances.
+
+-   Use of the functions for cross-validation (`runCrossVal()`, `runParentWiseCrossVal()`,
 -   possibly the imputation and breeding data processing helper functions (wrappers for e.g. Beagle and code for BreedBase data cleaning).

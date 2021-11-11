@@ -94,6 +94,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/non_additive_models.html">Genomic predictions with non-additive effects</a>
+    </li>
+    <li>
       <a href="../articles/start_here.html">Getting started predicting crosses</a>
     </li>
   </ul>
@@ -160,6 +163,9 @@ SNP marker ID naming conventions are probably too strict; add flexibility / robu
 More flexibility for the <code><a href="../reference/crosses2predict.html">crosses2predict()</a></code> function: reciprocal crosses? don’t include selfs?</p></li>
 <li><p><input type="checkbox" disabled>
 Change <code><a href="../reference/predCrossMeans.html">predCrossMeans()</a></code> so that it can accept either <code>dosages</code> or a <code>haploMat</code>. Currently, <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> requires users to supply both <code>dosages</code> <em>and</em> <code>haploMat</code> . Changing <code><a href="../reference/predCrossMeans.html">predCrossMeans()</a></code> in this way will allow users of <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> to supply only the <code>haploMat</code> if they are predicting both cross means <em>and</em> variances, or only <code>dosages</code> if predicting only means.</p></li>
+<li><p><input type="checkbox" disabled><code>modelType="AD_geno"</code> or something like that –&gt; genotypic additive-dominance partition allowing prediction of <span class="math inline"><em>μ</em><sub><em>T</em><em>G</em><em>V</em></sub></span> in addition to <span class="math inline"><em>μ</em><sub><em>B</em><em>V</em></sub></span> but <em>without</em> the genome-wide directional dominance part implemented in <code>modelType="DirDom"</code>.</p></li>
+<li><p><input type="checkbox" disabled>
+When you set <code>getMarkEffs=TRUE</code> in <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code>, tell the user that the function is erroring because they forgot to input the dosage matrix via <code>dosages=</code>.</p></li>
 </ul>
 </div>
 </div>
