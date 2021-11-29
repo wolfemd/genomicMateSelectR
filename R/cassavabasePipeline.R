@@ -15,19 +15,37 @@
 #' @return merged data.frame phenos + metadata
 #' @export
 readDBdata<-function(phenotypeFile,metadataFile=NULL){
-  indata<-read.csv(phenotypeFile,
-                   na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-                   stringsAsFactors = F)
+  ## Cassavabase trials downloaded using the "Wizard" page
+  ## have metadata lines prepended
+  ## Enable readDBdata to correctly read data from either
+  ## the "Download" tool or "Wizard" pages
+
+  possibly_read_csv<-purrr::possibly(read.csv,NA)
+  # works if from Download page
+  indata<-possibly_read_csv(phenotypeFile,
+                            na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                            stringsAsFactors = F)
+  if(is.na(indata)){
+    # if from Wizard page
+    indata<-possibly_read_csv(phenotypeFile,
+                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                              stringsAsFactors = F, skip=3) }
+
   if(!is.null(metadataFile)){
-    meta<-read.csv(metadataFile,
-                   na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-                   stringsAsFactors = F) %>%
-      rename(programName=breedingProgramName,
-             programDescription=breedingProgramDescription,
-             programDbId=breedingProgramDbId)
-    indata<-left_join(indata,meta) }
+    meta<-possibly_read_csv(metadataFile,
+                            na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                            stringsAsFactors = F)
+    if(is.na(meta)){
+      meta<-possibly_read_csv(metadataFile,
+                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                              stringsAsFactors = F, skip=2) }
+    meta %<>%
+      dplyr::rename(programName=breedingProgramName,
+                    programDescription=breedingProgramDescription,
+                    programDbId=breedingProgramDbId)
+    indata<-dplyr::left_join(indata,meta) }
   indata %<>%
-    filter(observationLevel=="plot")
+    dplyr::filter(observationLevel=="plot")
   return(indata) }
 
 #' Add TrialType classifier
