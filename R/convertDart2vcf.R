@@ -200,7 +200,7 @@ convertDart2vcf<-function(dartvcfInput,dartcountsInput,outName,
               file = paste0(outName,".vcf"))
   write.table(tmp,
               paste0(outName,".vcf"),
-              append = T, sep = "\t", row.names=F, col.names=T, quote=F)
+              append = FALSE, sep = "\t", row.names=F, col.names=T, quote=F)
   # Save sitesWithAlleles
   tmp %>%
     rename(CHROM=`#CHROM`) %>%
