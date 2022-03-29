@@ -66,7 +66,7 @@ runCrossVal<-function(blups,
     set.seed(seed);
     seeds<-sample(1:1e6,replace = F,size = nrepeats)
   } else {
-    seeds-sample(1:1e6,replace = F,size = nrepeats) }
+    seeds<-sample(1:1e6,replace = F,size = nrepeats) }
 
   # Set-up replicated cross-validation folds
   # splitting by clone (if clone in training dataset, it can't be in testing)

@@ -32,8 +32,8 @@
 #' @param ped data.frame, 3 columns, "GID" (or \code{gid}), "sireID", "damID"
 #' for male and female parent, respectively.
 #' @param gid string variable name used for genotype ID's in e.g. \code{blups} (default="GID")
-#' @param blups nested data.frame with list-column "TrainingData" containing
-#   BLUPs. Each element of "TrainingData" list, is data.frame with de-regressed
+#' @param blups nested data.frame with list-column "blups" containing
+#   BLUPs. Each element of "blups" list, is data.frame with de-regressed
 #   BLUPs, BLUPs and weights (WT) for training and test. If byGroup==TRUE, a
 #   column with Group as the header uniquely classifying GIDs into genetic
 #   groups, is expected.

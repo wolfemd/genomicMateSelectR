@@ -24,6 +24,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -36,18 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">genomicMateSelectR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -72,7 +68,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/wolfemd/genomicMateSelectR/">
+  <a href="https://github.com/wolfemd/genomicMateSelectR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -89,33 +85,34 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="genomic-mate-selection-in-r" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#genomic-mate-selection-in-r" class="anchor"></a>Genomic Mate Selection in R</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="genomic-mate-selection-in-r">Genomic Mate Selection in R<a class="anchor" aria-label="anchor" href="#genomic-mate-selection-in-r"></a>
+</h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>Welcome to the R package that provides support for genomic-enabled prediction and mate selection for plant and animal breeding: <code><a href="https://github.com/wolfemd/genomicMateSelectR">library(genomicMateSelectR)</a></code>.</p>
+<p>Welcome to the R package that provides support for genomic-enabled prediction and mate selection for plant and animal breeding: <code><a href="https://github.com/wolfemd/genomicMateSelectR" class="external-link">library(genomicMateSelectR)</a></code>.</p>
 <p>The primary functions of <code>genomicMateSelectR</code> predict the means and variances in performance among progeny of crosses based on parent data in order to support selection of mates in a breeding program. Supports diploid organisms with phased, chromosome- or linkage-group ordered biallelic marker data, and a centimorgan-scale genetic map. Additional functions automate cross-validation estimation of prediction accuracy, and more.</p>
-<p>The package includes what might be too many extra functions. Indeed, it spans the entire pipeline used for <strong>genomic mate selection</strong> for the <a href="https://www.nextgencassava.org/">NextGen Cassava Breeding programs</a> using data downloads from <a href="https://www.cassavabase.org">Cassavabase</a>. Functions to: automate cross-validation procedures, compute accuracy on a selection index, make predictions of individual and cross performances on a multi-trait selection index. Prediction models including additive-effects only (“A”), additive-plus-dominance (“AD”) and a directional dominance model (“DirDom”). Functions used in cleaning and curating breeding pipeline field data <em>plus</em> handling and imputing genomics data are also included, but most users are not likely to find these of interest. Not everything has been equally tested or documented at this stage.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install <a href="https://www.github.com/wolfemd/genomicMateSelectR/"><strong>genomicMateSelectR</strong> package from my GitHub</a> with:</p>
-<pre class="{.r}"><code>devtools::install_github("wolfemd/genomicMateSelectR", ref = 'master') </code></pre>
+<p>The package includes what might be too many extra functions. Indeed, it spans the entire pipeline used for <strong>genomic mate selection</strong> for the <a href="https://www.nextgencassava.org/" class="external-link">NextGen Cassava Breeding programs</a> using data downloads from <a href="https://www.cassavabase.org" class="external-link">Cassavabase</a>. Functions to: automate cross-validation procedures, compute accuracy on a selection index, make predictions of individual and cross performances on a multi-trait selection index. Prediction models including additive-effects only (“A”), additive-plus-dominance (“AD”) and a directional dominance model (“DirDom”). Functions used in cleaning and curating breeding pipeline field data <em>plus</em> handling and imputing genomics data are also included, but most users are not likely to find these of interest. Not everything has been equally tested or documented at this stage.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install <a href="https://www.github.com/wolfemd/genomicMateSelectR/" class="external-link"><strong>genomicMateSelectR</strong> package from my GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"wolfemd/genomicMateSelectR"</span>, ref <span class="op">=</span> <span class="st">'master'</span><span class="op">)</span> </code></pre></div>
 </div>
-<div id="get-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#get-started" class="anchor"></a>Get Started</h2>
+<div class="section level2">
+<h2 id="get-started">Get Started<a class="anchor" aria-label="anchor" href="#get-started"></a>
+</h2>
 <p><strong>CHECK OUT THE NEW VIGNETTES!</strong></p>
-<ol>
+<ol style="list-style-type: decimal">
 <li><a href="articles/start_here.html">Getting starting predicting crosses</a></li>
 <li><a href="articles/non_additive_models.html">Genomic (cross) predictions with non-additive effects</a></li>
 </ol>
 <p><strong>More to come!</strong></p>
 </div>
-<div id="feature-highlights" class="section level2">
-<h2 class="hasAnchor">
-<a href="#feature-highlights" class="anchor"></a>Feature highlights</h2>
+<div class="section level2">
+<h2 id="feature-highlights">Feature highlights<a class="anchor" aria-label="anchor" href="#feature-highlights"></a>
+</h2>
 <ul>
 <li>Allows for parents to be of arbitrary heterozygosity/homozygosity (outbred or inbred)</li>
 <li>Predicts the <strong>additive</strong> <em>and</em> <strong>dominance</strong> genetic variances in the <span class="math inline"><em>F</em><sub>1</sub></span>
@@ -131,9 +128,9 @@
 <li>Various data helper functions</li>
 </ul>
 </div>
-<div id="core-function-overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#core-function-overview" class="anchor"></a>Core function overview</h2>
+<div class="section level2">
+<h2 id="core-function-overview">Core function overview<a class="anchor" aria-label="anchor" href="#core-function-overview"></a>
+</h2>
 <table class="table">
 <colgroup>
 <col width="5%">
@@ -146,7 +143,7 @@
 <tbody>
 <tr class="odd">
 <td><code><a href="reference/runGenomicPredictions.html">runGenomicPredictions()</a></code></td>
-<td>Run GBLUP model using <code><a href="https://rdrr.io/pkg/sommer/man/mmer.html">sommer::mmer</a></code>, potentially on multiple traits. Returns genomic BLUPs (GEBV and GETGV). If requested, returns backsolved marker effects (equivalent to ridge regression / SNP-BLUP).</td>
+<td>Run GBLUP model using <code><a href="https://rdrr.io/pkg/sommer/man/mmer.html" class="external-link">sommer::mmer</a></code>, potentially on multiple traits. Returns genomic BLUPs (GEBV and GETGV). If requested, returns backsolved marker effects (equivalent to ridge regression / SNP-BLUP).</td>
 </tr>
 <tr class="even">
 <td><code><a href="reference/predictCrosses.html">predictCrosses()</a></code></td>
@@ -195,54 +192,66 @@
 </tbody>
 </table>
 </div>
-<div id="nextgen-cassava-gs-pipeline-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#nextgen-cassava-gs-pipeline-functions" class="anchor"></a>NextGen Cassava GS pipeline functions</h2>
-<p>In addition, a host of functions developed to support processing both the field trial data stored on the <a href="https://www.cassavabase.org/">Cassavabase</a> and the genotyping/genomics data (imputation, file conversions).</p>
+<div class="section level2">
+<h2 id="nextgen-cassava-gs-pipeline-functions">NextGen Cassava GS pipeline functions<a class="anchor" aria-label="anchor" href="#nextgen-cassava-gs-pipeline-functions"></a>
+</h2>
+<p>In addition, a host of functions developed to support processing both the field trial data stored on the <a href="https://www.cassavabase.org/" class="external-link">Cassavabase</a> and the genotyping/genomics data (imputation, file conversions).</p>
 <p>There are two “families” of functions distinguished in the <a href="reference/index.html">Reference</a> as “cassavabase_pheno_pipeline” and “imputation_functions”.</p>
 </div>
-<div id="relationship-to-predcrossvar" class="section level2">
-<h2 class="hasAnchor">
-<a href="#relationship-to-predcrossvar" class="anchor"></a>Relationship to <code>predCrossVar</code>
+<div class="section level2">
+<h2 id="relationship-to-predcrossvar">Relationship to <code>predCrossVar</code>
+<a class="anchor" aria-label="anchor" href="#relationship-to-predcrossvar"></a>
 </h2>
-<p><code><a href="https://github.com/wolfemd/genomicMateSelectR">library(genomicMateSelectR)</a></code> descends from and extends the <a href="https://wolfemd.github.io/predCrossVar/"><strong>predCrossVar</strong></a> R package. <code><a href="https://rdrr.io/r/base/library.html">library(predCrossVar)</a></code> was build alongside an <a href="https://www.biorxiv.org/content/10.1101/2021.01.05.425443v1">an initial study</a>, which showed promising results regarding the prediction of genetic variance in cassava crosses. Subsequent to that initial study, the code was completed and improved. The considerable subsequent analyses leading to the functions collected in <code><a href="https://github.com/wolfemd/genomicMateSelectR">library(genomicMateSelectR)</a></code> are completely documented <a href="https://wolfemd.github.io/implementGMSinCassava/">here</a>.</p>
+<p><code><a href="https://github.com/wolfemd/genomicMateSelectR" class="external-link">library(genomicMateSelectR)</a></code> descends from and extends the <a href="https://wolfemd.github.io/predCrossVar/" class="external-link"><strong>predCrossVar</strong></a> R package. <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(predCrossVar)</a></code> was build alongside an <a href="https://www.biorxiv.org/content/10.1101/2021.01.05.425443v1" class="external-link">an initial study</a>, which showed promising results regarding the prediction of genetic variance in cassava crosses. Subsequent to that initial study, the code was completed and improved. The considerable subsequent analyses leading to the functions collected in <code><a href="https://github.com/wolfemd/genomicMateSelectR" class="external-link">library(genomicMateSelectR)</a></code> are completely documented <a href="https://wolfemd.github.io/implementGMSinCassava/" class="external-link">here</a>.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/wolfemd/genomicMateSelectR/">https://​github.com/​wolfemd/​genomicMateSelectR/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/wolfemd/genomicMateSelectR/issues">https://​github.com/​wolfemd/​genomicMateSelectR/​issues</a>
-</li>
+<li><a href="https://github.com/wolfemd/genomicMateSelectR/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/wolfemd/genomicMateSelectR/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing genomicMateSelectR</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Marnin Wolfe <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Marnin Wolfe.</p>
+  <p></p>
+<p>Developed by Marnin Wolfe.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -250,6 +259,8 @@
 
   
 
+
+  
 
   </body>
 </html>

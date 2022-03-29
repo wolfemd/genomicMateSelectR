@@ -59,7 +59,7 @@ for male and female parent, respectively.}
 
 \item{gid}{string variable name used for genotype ID's in e.g. \code{blups} (default="GID")}
 
-\item{blups}{nested data.frame with list-column "TrainingData" containing}
+\item{blups}{nested data.frame with list-column "blups" containing}
 
 \item{dosages}{dosage matrix. required only for modelType=="DirDom".
 Assumes SNPs coded 0, 1, 2. Nind rows x Nsnp
