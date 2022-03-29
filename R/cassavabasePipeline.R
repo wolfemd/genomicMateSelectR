@@ -19,7 +19,6 @@ readDBdata<-function(phenotypeFile,metadataFile=NULL){
   ## have metadata lines prepended
   ## Enable readDBdata to correctly read data from either
   ## the "Download" tool or "Wizard" pages
-
   possibly_read_csv<-purrr::possibly(read.csv,NA)
   # works if from Download page
   indata<-possibly_read_csv(phenotypeFile,

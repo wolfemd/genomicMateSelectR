@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">genomicMateSelectR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -67,7 +63,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/wolfemd/genomicMateSelectR/">
+  <a href="https://github.com/wolfemd/genomicMateSelectR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,13 +78,13 @@
 
       
 
-      </header><script src="start_here_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Getting started predicting crosses</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/wolfemd/genomicMateSelectR/blob/master/vignettes/start_here.Rmd"><code>vignettes/start_here.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wolfemd/genomicMateSelectR/blob/HEAD/vignettes/start_here.Rmd" class="external-link"><code>vignettes/start_here.Rmd</code></a></small>
       <div class="hidden name"><code>start_here.Rmd</code></div>
 
     </div>
@@ -96,7 +92,7 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/wolfemd/genomicMateSelectR">genomicMateSelectR</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/wolfemd/genomicMateSelectR" class="external-link">genomicMateSelectR</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: tibble</span>
 <span class="co">#&gt; Loading required package: dplyr</span>
 <span class="co">#&gt; </span>
@@ -110,10 +106,10 @@
 <span class="co">#&gt; Loading required package: tidyr</span>
 <span class="co">#&gt; Loading required package: purrr</span></code></pre></div>
 <p>The following will be a demonstration of the core functions for predicting mate selection criteria available in <code>genomicMateSelectR</code>.</p>
-<div id="simulated-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#simulated-data" class="anchor"></a>Simulated data</h1>
-<p>I generated simulated data, included in the package (accessible via <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>), which should clarify the input format(s) required.</p>
+<div class="section level1">
+<h1 id="simulated-data">Simulated data<a class="anchor" aria-label="anchor" href="#simulated-data"></a>
+</h1>
+<p>I generated simulated data, included in the package (accessible via <code><a href="https://rdrr.io/r/utils/data.html" class="external-link">data()</a></code>), which should clarify the input format(s) required.</p>
 <p>The example input data will be explained and used in the vignette below.</p>
 <p>Simulation was conducted with the package <code>AlphaSimR</code>.</p>
 <ul>
@@ -123,9 +119,9 @@
 <li>Generates 300 individuals across 3 generations</li>
 </ul>
 </div>
-<div id="quick-start" class="section level1">
-<h1 class="hasAnchor">
-<a href="#quick-start" class="anchor"></a>Quick Start</h1>
+<div class="section level1">
+<h1 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h1>
 <p>In a subsequent section, we will dig into the details and more fully explore all the available options in <code>genomicMateSelectR</code>. First, a quick demo of the <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> function using (mostly) ready-to-go pre-prepared input data.</p>
 <p>To predict cross variance, 4 inputs are required:</p>
 <ol style="list-style-type: decimal">
@@ -139,13 +135,13 @@
 <li>Marker effects</li>
 <li>Crosses to be predicted</li>
 </ol>
-<div id="haplotype-matrix" class="section level2">
-<h2 class="hasAnchor">
-<a href="#haplotype-matrix" class="anchor"></a>Haplotype matrix</h2>
+<div class="section level2">
+<h2 id="haplotype-matrix">Haplotype matrix<a class="anchor" aria-label="anchor" href="#haplotype-matrix"></a>
+</h2>
 <p>First input is a matrix,<code>haploMat</code> with two rows per individual and one column per SNP locus.</p>
 <p>Alleles coded <code>{0,1}</code>. <code>rownames(haploMat)</code> contains sample IDs (“GID”) with haplotypes distinguished by the mandatory suffixes “_HapA” and “_HapB”. <code>colnames(haploMat)</code> correspond to SNP IDs (<em>i.e.</em> <span class="math inline">\(chr \_ pos\)</span>), currently requires that chromosomes be distinguished using integers; no prefix to SNP IDs is allowed (i.e. 1_2 <em>not</em> chr1_2 and also not anything like A_2). In this example, the GIDs are all numbers, they are from simulated data; in practice they can be any alphanumeric string.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">haploMat</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">haploMat</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">haploMat</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">haploMat</span><span class="op">)</span>
 <span class="co">#&gt;  int [1:600, 1:100] 0 1 1 1 1 1 1 0 0 1 ...</span>
 <span class="co">#&gt;  - attr(*, "dimnames")=List of 2</span>
 <span class="co">#&gt;   ..$ : chr [1:600] "1_HapA" "1_HapB" "2_HapA" "2_HapB" ...</span>
@@ -159,14 +155,14 @@
 <span class="co">#&gt; 2_HapB   1   0   0   1   1    0    0    1</span>
 <span class="co">#&gt; 3_HapA   1   0   1   0   0    0    0    0</span>
 <span class="co">#&gt; 3_HapB   1   0   1   0   0    0    1    1</span></code></pre></div>
-<div id="dosages" class="section level3">
-<h3 class="hasAnchor">
-<a href="#dosages" class="anchor"></a>Dosages</h3>
+<div class="section level3">
+<h3 id="dosages">Dosages<a class="anchor" aria-label="anchor" href="#dosages"></a>
+</h3>
 <p>For now, to use <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code>, both a <code>haploMat</code> <em>and</em> another, related matrix (<code>dosages</code>) are required as input.</p>
 <p>The matrix <code>dosages</code> has one row per individual sample and one column per SNP marker. Column-names are the same as for <code>haploMat</code>. rownames are the same prefix as in <code>haploMat</code>, but no suffix (“_HapA” or “_HapB”). Genotypes are coded <code>{0, 1, 2}</code> counting the number of (usually) the alternative allele. Important that the counted allele is the same allele as indicated by the value <code>1</code> in the <code>haploMat</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"doseMat"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">doseMat</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"doseMat"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">doseMat</span><span class="op">)</span>
 <span class="co">#&gt;  int [1:300, 1:100] 1 2 2 1 1 0 1 1 1 2 ...</span>
 <span class="co">#&gt;  - attr(*, "dimnames")=List of 2</span>
 <span class="co">#&gt;   ..$ : chr [1:300] "1" "2" "3" "4" ...</span>
@@ -180,15 +176,15 @@
 <p><strong>NOTE:</strong> The dual <code>dosages</code> and <code>haploMat</code> input requirement is because most users will be predicting cross means + variances and currently, the function <code><a href="../reference/predCrossMeans.html">predCrossMeans()</a></code>, which is used internally, requires <code>dosages</code> and <code><a href="../reference/predCrossVars.html">predCrossVars()</a></code> needs a <code>haploMat</code>. Its computationally more efficient (I think) to avoid converting haplotype matrices into dosage matrices internally, thus I demand both be specified. On the improvement to-do list.</p>
 </div>
 </div>
-<div id="recombination-frequency-matrix" class="section level2">
-<h2 class="hasAnchor">
-<a href="#recombination-frequency-matrix" class="anchor"></a>Recombination frequency matrix</h2>
+<div class="section level2">
+<h2 id="recombination-frequency-matrix">Recombination frequency matrix<a class="anchor" aria-label="anchor" href="#recombination-frequency-matrix"></a>
+</h2>
 <p>The second input, <code>recombFreqMat</code> is a square-symmetric matrix, with dimension <em>p</em>-markers by <em>p</em>-markers. The elements of <code>recombFreqMat</code>, should actually be <code>1-2*recombFreqMat</code>, meaning 1 minus 2 times the expected frequency of recombination between pairs of loci; a decision made for computational efficiency.</p>
 <p>The usual starting point to create this matrix will be a centimorgan-scale genetic map. <code>genomicMateSelectR</code> provides a helper function <code><a href="../reference/genmap2recombfreq.html">genmap2recombfreq()</a></code> to facilitate the conversion.</p>
 <p>Users can input their genetic map as a named, numeric vector as shown below (<code>genmap</code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">genmap</span><span class="op">)</span>; 
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">genmap</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">genmap</span><span class="op">)</span>; 
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">genmap</span><span class="op">)</span>
 <span class="co">#&gt;  Named num [1:100] 0.366 1.014 5.598 6.46 7.216 ...</span>
 <span class="co">#&gt;  - attr(*, "names")= chr [1:100] "1_2" "1_3" "1_6" "1_7" ...</span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -200,7 +196,7 @@
 <p>The input format for <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code>, for reasons of computational efficiency, is actually <code>1-2*recombFreqMat</code> where <code>recombFreqMat</code> is a</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">recombFreqMat</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/genmap2recombfreq.html">genmap2recombfreq</a></span><span class="op">(</span><span class="va">genmap</span>, nChr <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">recombFreqMat</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">recombFreqMat</span><span class="op">)</span>
 <span class="co">#&gt;  num [1:100, 1:100] 0 0.363 0.5 0.5 0.5 ...</span>
 <span class="co">#&gt;  - attr(*, "dimnames")=List of 2</span>
 <span class="co">#&gt;   ..$ : chr [1:100] "1_2" "1_3" "1_6" "1_7" ...</span>
@@ -225,34 +221,34 @@
 <span class="co">#&gt; 1_8 1.124479e-06 4.107035e-06 3.936349e-02 2.206503e-01 1.000000e+00</span></code></pre></div>
 <p>This corresponds to the input to <code>predictCrosses(recombFreqMat=)</code> and the example dataset included with the package: <code>data("recombFreqMat")</code></p>
 </div>
-<div id="marker-effects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#marker-effects" class="anchor"></a>Marker effects</h2>
+<div class="section level2">
+<h2 id="marker-effects">Marker effects<a class="anchor" aria-label="anchor" href="#marker-effects"></a>
+</h2>
 <p>The third input, for <code>predictCrosses(snpeffs=)</code> are marker-effects from genome-wide marker regression e.g. RR-BLUP.</p>
 <p>Marker-effects are supplied as a <code>tibble</code> with one row per trait, one chr-type column named <strong>Trait</strong> and one or more list-type columns containing SNP-effects. Each element of each list-type SNP-effects column corresponds to effects for a single trait, and contains a matrix with a single column, rownames corresponding to SNP IDs and should match the IDs in <code>recombFreqMat</code> and <code>haploMat</code>.</p>
 <p>The number and required column names for the SNP-effect list-type columns depends on the value of <code>modelType==</code>. There are 3 model types implemented <code>"A"</code>, <code>"AD"</code> and <code>"DirDom"</code>. The <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> function is designed to be run with output produced by running the <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code> function using the same <code>modelType</code> setting. Both are designed to ensure / encourage the correct formulation of additive+dominance models.</p>
 <p>For this quick example, the additive-only model: <code>modelType="A"</code>. I’ll introduce each model later and explain the correct inputs / expected outputs for those.</p>
 <p>The example dataset <code>data(snpeffsA)</code> is <code>gpredsA$genomicPredOut[[1]]</code> where <code>gpreds</code> is the output of running <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code> with <code>modelType = "A"</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">snpeffsA</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">snpeffsA</span><span class="op">)</span>
 <span class="va">snpeffsA</span>
-<span class="co">#&gt; # A tibble: 2 × 5</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span>
 <span class="co">#&gt;   Trait  gblups             varcomps     fixeffs      allelesubsnpeff</span>
-<span class="co">#&gt;   &lt;chr&gt;  &lt;list&gt;             &lt;list&gt;       &lt;list&gt;       &lt;list&gt;         </span>
-<span class="co">#&gt; 1 Trait1 &lt;tibble [300 × 2]&gt; &lt;df [2 × 4]&gt; &lt;df [1 × 5]&gt; &lt;dbl [100 × 1]&gt;</span>
-<span class="co">#&gt; 2 Trait2 &lt;tibble [300 × 2]&gt; &lt;df [2 × 4]&gt; &lt;df [1 × 5]&gt; &lt;dbl [100 × 1]&gt;</span></code></pre></div>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Trait1 <span style="color: #949494;">&lt;tibble [300 × 2]&gt;</span> <span style="color: #949494;">&lt;df [2 × 4]&gt;</span> <span style="color: #949494;">&lt;df [1 × 5]&gt;</span> <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Trait2 <span style="color: #949494;">&lt;tibble [300 × 2]&gt;</span> <span style="color: #949494;">&lt;df [2 × 4]&gt;</span> <span style="color: #949494;">&lt;df [1 × 5]&gt;</span> <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span></span></code></pre></div>
 <p>Because <code>snpeffsA</code> is the output of <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code>, there are columns that are not required and will be ignored by <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code>. The unecessary columns are <strong>gblups</strong>, <strong>varcomps</strong> and <strong>fixeffs</strong>.</p>
 <p>Required:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">snpeffsA</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Trait</span>,<span class="va">allelesubsnpeff</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 2 × 2</span>
+<code class="sourceCode R"><span class="va">snpeffsA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Trait</span>,<span class="va">allelesubsnpeff</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 2</span></span>
 <span class="co">#&gt;   Trait  allelesubsnpeff</span>
-<span class="co">#&gt;   &lt;chr&gt;  &lt;list&gt;         </span>
-<span class="co">#&gt; 1 Trait1 &lt;dbl [100 × 1]&gt;</span>
-<span class="co">#&gt; 2 Trait2 &lt;dbl [100 × 1]&gt;</span></code></pre></div>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Trait1 <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Trait2 <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span></span></code></pre></div>
 <p>Two rows, one for each trait. One list-column, required to be labelled <strong>allelsubsnpeff</strong>, containing a single-column matrix of SNP-effects, rownames identifying SNP IDs.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">snpeffsA</span><span class="op">$</span><span class="va">allelesubsnpeff</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="va">head</span>
+<code class="sourceCode R"><span class="va">snpeffsA</span><span class="op">$</span><span class="va">allelesubsnpeff</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span>
 <span class="co">#&gt;            [,1]</span>
 <span class="co">#&gt; 1_2  14.6901150</span>
 <span class="co">#&gt; 1_3   0.4877389</span>
@@ -261,7 +257,7 @@
 <span class="co">#&gt; 1_8  -2.2205335</span>
 <span class="co">#&gt; 1_11  2.7950027</span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">snpeffsA</span><span class="op">$</span><span class="va">allelesubsnpeff</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">snpeffsA</span><span class="op">$</span><span class="va">allelesubsnpeff</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 <span class="co">#&gt;        V1          </span>
 <span class="co">#&gt;  Min.   :-17.6166  </span>
 <span class="co">#&gt;  1st Qu.: -4.1909  </span>
@@ -270,40 +266,40 @@
 <span class="co">#&gt;  3rd Qu.:  5.3649  </span>
 <span class="co">#&gt;  Max.   : 27.7530</span></code></pre></div>
 </div>
-<div id="crosses-to-predict" class="section level2">
-<h2 class="hasAnchor">
-<a href="#crosses-to-predict" class="anchor"></a>Crosses to predict</h2>
+<div class="section level2">
+<h2 id="crosses-to-predict">Crosses to predict<a class="anchor" aria-label="anchor" href="#crosses-to-predict"></a>
+</h2>
 <p>Lastly, we just need to tell <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code>, which crosses to predict. The input to argument <code>CrossesToPredict=</code> should be a <code>tibble</code> or <code>data.frame</code> with two-columns. Columns should be character-class (no factors!), column names should be <strong>sireID</strong> and <strong>damID</strong>. Names should be present in the rownames of <code>haploMat</code> and the row/colnames of <code>recombFreqMat</code>.</p>
 <p>There is a helper function <code><a href="../reference/crosses2predict.html">crosses2predict()</a></code> that takes a vector of parents as input and creates a <code>data.frame</code> of all pairwise matings, including self-crosses, but <em>excluding</em> reciprocal crosses, i.e. use as male == use as female. Basically <code><a href="../reference/crosses2predict.html">crosses2predict()</a></code> specifies crosses on the diagonal and in the upper-triangle of a potentially square-symmetrical mating matrix.</p>
 <p>Here, I’ll just randomly choose 5 parents and make a list of the 15 <code>CrossesToPredict</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>;
-<span class="va">parents</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">snpeffsA</span><span class="op">$</span><span class="va">gblups</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">GID</span>, size <span class="op">=</span> <span class="fl">5</span>, replace <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>;
+<span class="va">parents</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">snpeffsA</span><span class="op">$</span><span class="va">gblups</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">GID</span>, size <span class="op">=</span> <span class="fl">5</span>, replace <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
 <span class="va">CrossesToPredict</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/crosses2predict.html">crosses2predict</a></span><span class="op">(</span><span class="va">parents</span><span class="op">)</span>
-<span class="va">CrossesToPredict</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="va">head</span>
-<span class="co">#&gt; # A tibble: 6 × 2</span>
+<span class="va">CrossesToPredict</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 2</span></span>
 <span class="co">#&gt;   sireID damID</span>
-<span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;</span>
-<span class="co">#&gt; 1 49     49   </span>
-<span class="co">#&gt; 2 49     153  </span>
-<span class="co">#&gt; 3 49     74   </span>
-<span class="co">#&gt; 4 49     228  </span>
-<span class="co">#&gt; 5 49     146  </span>
-<span class="co">#&gt; 6 153    153</span></code></pre></div>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 49     49   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 49     153  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 49     74   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 49     228  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 49     146  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 153    153</span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">CrossesToPredict</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">CrossesToPredict</span><span class="op">)</span>
 <span class="co">#&gt; tibble [15 × 2] (S3: tbl_df/tbl/data.frame)</span>
 <span class="co">#&gt;  $ sireID: chr [1:15] "49" "49" "49" "49" ...</span>
 <span class="co">#&gt;  $ damID : chr [1:15] "49" "153" "74" "228" ...</span></code></pre></div>
 </div>
-<div id="predict-crosses" class="section level2">
-<h2 class="hasAnchor">
-<a href="#predict-crosses" class="anchor"></a>Predict crosses</h2>
+<div class="section level2">
+<h2 id="predict-crosses">Predict crosses<a class="anchor" aria-label="anchor" href="#predict-crosses"></a>
+</h2>
 <p>And behold, we have the stuff we need to predict crosses.</p>
 <p><strong>Selection Indices:</strong><br><code>genomicMateSelectR</code> is built to facilitate mating choices based on multiple traits, particularly using a user-specified set of weights (<strong>SIwts</strong>) to produce cross merit predictions on a linear selection index (<code>selInd</code>). When supplied multiple traits, <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> will predict both the variances of those traits and their covariance in each family. When the user specifies <code>selInd = T</code> and supplies a vector of weights with names matching the trait names, <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> will add predictions for a new composite trait, <strong>SELIND</strong> to the output.</p>
 <p><strong>SIwts</strong> are used as-is by <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> so the user is responsible for choosing “good” values; a topic beyond the scope of this manual / vignette.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">SIwts</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.75</span>,<span class="fl">0.25</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu">`names&lt;-`</span><span class="op">(</span><span class="va">.</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Trait1"</span>,<span class="st">"Trait2"</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">SIwts</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>,<span class="fl">0.25</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">`names&lt;-`</span><span class="op">(</span><span class="va">.</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Trait1"</span>,<span class="st">"Trait2"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">SIwts</span>
 <span class="co">#&gt; Trait1 Trait2 </span>
 <span class="co">#&gt;   0.75   0.25</span></code></pre></div>
@@ -316,37 +312,37 @@
                            haploMat<span class="op">=</span><span class="va">haploMat</span>,
                            recombFreqMat<span class="op">=</span><span class="va">recombFreqMat</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Predicting cross variance parameters"</span>
-<span class="co">#&gt; [1] "Done predicting fam vars. Took 0.07 mins for 15 crosses"</span>
+<span class="co">#&gt; [1] "Done predicting fam vars. Took 0.06 mins for 15 crosses"</span>
 <span class="co">#&gt; [1] "Predicting cross means"</span>
 <span class="co">#&gt; [1] "Computing SELECTION INDEX means and variances."</span></code></pre></div>
 <p>Now we can quickly examine the output.</p>
 <p>Produces a single-row tibble (basically a 2 element list) with two columns <strong>tidyPreds</strong> and <strong>rawPreds</strong>.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">crossPreds</span>
-<span class="co">#&gt; # A tibble: 1 × 2</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 2</span></span>
 <span class="co">#&gt;   tidyPreds         rawPreds        </span>
-<span class="co">#&gt;   &lt;list&gt;            &lt;list&gt;          </span>
-<span class="co">#&gt; 1 &lt;tibble [45 × 9]&gt; &lt;named list [2]&gt;</span></code></pre></div>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>          </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #949494;">&lt;tibble [45 × 9]&gt;</span> <span style="color: #949494;">&lt;named list [2]&gt;</span></span></code></pre></div>
 <p>Most users and breeders will work with the <strong>tidyPreds</strong>. This simplified output was designed especially for those interested in selections based on <strong>SELIND</strong>.</p>
 <p>Each row contains relevant predictions for a single trait in a single cross. Trait <strong><em>co</em></strong>variances are excluded from this output in order to show both mean (<strong>predMean</strong>), variance / standard deviation (<strong>predVar</strong>, <strong>predSD</strong>) and usefulness (<strong>predUsefulness</strong>) side-by-side.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; # A tibble: 45 × 9</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 45 × 9</span></span>
 <span class="co">#&gt;    sireID damID Nsegsnps predOf Trait  predMean predVar predSD predUsefulness</span>
-<span class="co">#&gt;    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;</span>
-<span class="co">#&gt;  1 49     49          22 BV     SELIND    115.     361.   19.0         166.  </span>
-<span class="co">#&gt;  2 49     49          22 BV     Trait1    194.     707.   26.6         265.  </span>
-<span class="co">#&gt;  3 49     49          22 BV     Trait2   -119.    1519.   39.0         -15.1 </span>
-<span class="co">#&gt;  4 49     153         46 BV     SELIND    108.     454.   21.3         165.  </span>
-<span class="co">#&gt;  5 49     153         46 BV     Trait1    174.    1079.   32.8         262.  </span>
-<span class="co">#&gt;  6 49     153         46 BV     Trait2    -89.4   1813.   42.6          24.3 </span>
-<span class="co">#&gt;  7 49     74          48 BV     SELIND     97.5    458.   21.4         155.  </span>
-<span class="co">#&gt;  8 49     74          48 BV     Trait1    165.     974.   31.2         249.  </span>
-<span class="co">#&gt;  9 49     74          48 BV     Trait2   -106.    1510.   38.9          -2.05</span>
-<span class="co">#&gt; 10 49     228         53 BV     SELIND     97.3    536.   23.2         159.  </span>
-<span class="co">#&gt; # … with 35 more rows</span></code></pre></div>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 49     49          22 BV     SELIND    115.     361.   19.0         166.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 49     49          22 BV     Trait1    194.     707.   26.6         265.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 49     49          22 BV     Trait2   -<span style="color: #BB0000;">119.</span>    <span style="text-decoration: underline;">1</span>519.   39.0         -<span style="color: #BB0000;">15.1</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 49     153         46 BV     SELIND    108.     454.   21.3         165.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 49     153         46 BV     Trait1    174.    <span style="text-decoration: underline;">1</span>079.   32.8         262.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 49     153         46 BV     Trait2    -<span style="color: #BB0000;">89.4</span>   <span style="text-decoration: underline;">1</span>813.   42.6          24.3 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 49     74          48 BV     SELIND     97.5    458.   21.4         155.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 49     74          48 BV     Trait1    165.     974.   31.2         249.  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 49     74          48 BV     Trait2   -<span style="color: #BB0000;">106.</span>    <span style="text-decoration: underline;">1</span>510.   38.9          -<span style="color: #BB0000;">2.05</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 49     228         53 BV     SELIND     97.3    536.   23.2         159.  </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 35 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="va">str</span>
+<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">str</span>
 <span class="co">#&gt; tibble [45 × 9] (S3: tbl_df/tbl/data.frame)</span>
 <span class="co">#&gt;  $ sireID        : chr [1:45] "49" "49" "49" "49" ...</span>
 <span class="co">#&gt;  $ damID         : chr [1:45] "49" "49" "49" "153" ...</span>
@@ -365,7 +361,7 @@
 </ul>
 <p>Complete details of the predictions, especially including trait-trait covariance predictions are available in the two-element, named-list contained in <strong>rawPreds</strong>:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">rawPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="va">str</span>
+<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">rawPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">str</span>
 <span class="co">#&gt; List of 2</span>
 <span class="co">#&gt;  $ predMeans:List of 1</span>
 <span class="co">#&gt;   ..$ : tibble [30 × 7] (S3: tbl_df/tbl/data.frame)</span>
@@ -381,7 +377,7 @@
 <span class="co">#&gt;   .. ..$ sireID     : chr [1:45] "49" "49" "49" "49" ...</span>
 <span class="co">#&gt;   .. ..$ damID      : chr [1:45] "49" "49" "49" "153" ...</span>
 <span class="co">#&gt;   .. ..$ Nsegsnps   : int [1:45] 22 22 22 46 46 46 48 48 48 53 ...</span>
-<span class="co">#&gt;   .. ..$ ComputeTime: Named num [1:45] 0.268 0.268 0.268 0.246 0.246 ...</span>
+<span class="co">#&gt;   .. ..$ ComputeTime: Named num [1:45] 0.249 0.249 0.249 0.233 0.233 0.233 0.217 0.217 0.217 0.223 ...</span>
 <span class="co">#&gt;   .. .. ..- attr(*, "names")= chr [1:45] "elapsed" "elapsed" "elapsed" "elapsed" ...</span>
 <span class="co">#&gt;   .. ..$ Trait1     : chr [1:45] "Trait1" "Trait2" "Trait1" "Trait1" ...</span>
 <span class="co">#&gt;   .. ..$ Trait2     : chr [1:45] "Trait1" "Trait2" "Trait2" "Trait1" ...</span>
@@ -390,34 +386,34 @@
 <p>At <code>crossPreds$rawPreds[[1]]$predMeans</code> are the predictions for cross means, and at <code>crossPreds$rawPreds[[1]]$predVars</code> are the predictions for cross variances.</p>
 <p>For sake of example, we should make a plot (predMean vs. predSD), for “fun” and then make a selection of the top 5 crosses, based on their predicted usefulness on the selection index:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Trait</span><span class="op">==</span><span class="st">"SELIND"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">.</span>,<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">predMean</span>,y<span class="op">=</span><span class="va">predSD</span>,
+<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Trait</span><span class="op">==</span><span class="st">"SELIND"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">.</span>,<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">predMean</span>,y<span class="op">=</span><span class="va">predSD</span>,
                                  color<span class="op">=</span><span class="va">predUsefulness</span>, size<span class="op">=</span><span class="va">predUsefulness</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="start_here_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Trait</span><span class="op">==</span><span class="st">"SELIND"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_max</a></span><span class="op">(</span>order_by <span class="op">=</span> <span class="va">predUsefulness</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 5 × 9</span>
+<code class="sourceCode R"><span class="va">crossPreds</span><span class="op">$</span><span class="va">tidyPreds</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Trait</span><span class="op">==</span><span class="st">"SELIND"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span>order_by <span class="op">=</span> <span class="va">predUsefulness</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 9</span></span>
 <span class="co">#&gt;   sireID damID Nsegsnps predOf Trait  predMean predVar predSD predUsefulness</span>
-<span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 49     49          22 BV     SELIND    115.     361.   19.0           166.</span>
-<span class="co">#&gt; 2 49     153         46 BV     SELIND    108.     454.   21.3           165.</span>
-<span class="co">#&gt; 3 153    153         33 BV     SELIND    101.     546.   23.4           163.</span>
-<span class="co">#&gt; 4 49     228         53 BV     SELIND     97.3    536.   23.2           159.</span>
-<span class="co">#&gt; 5 153    228         55 BV     SELIND     89.9    628.   25.1           157.</span>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 49     49          22 BV     SELIND    115.     361.   19.0           166.</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 49     153         46 BV     SELIND    108.     454.   21.3           165.</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 153    153         33 BV     SELIND    101.     546.   23.4           163.</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 49     228         53 BV     SELIND     97.3    536.   23.2           159.</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 153    228         55 BV     SELIND     89.9    628.   25.1           157.</span>
   <span class="co"># arrange(desc(predUsefulness)) %&gt;% slice(1:5) # same as `slice_max`</span></code></pre></div>
 </div>
 </div>
-<div id="next-steps" class="section level1">
-<h1 class="hasAnchor">
-<a href="#next-steps" class="anchor"></a>Next steps</h1>
+<div class="section level1">
+<h1 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h1>
 <p>That concludes the quick demo, focused on input formatting and output contents, using the basic additive-model in the function <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> to get selection-index cross usefulness predictions.</p>
-<div id="additional-vignettes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#additional-vignettes" class="anchor"></a>Additional vignettes</h2>
+<div class="section level2">
+<h2 id="additional-vignettes">Additional vignettes<a class="anchor" aria-label="anchor" href="#additional-vignettes"></a>
+</h2>
 <p>In subsequent vignettes I will provide:</p>
 <ol style="list-style-type: decimal">
 <li>Learn the <a href="articles/non_additive_models.html">features for incorporating non-additive effects into predictions</a>: <code>modelType="AD"</code>, <code>modelType="DirDom</code> and their correct useage. Includes a theoretical introduction, followed by a demonstration of the use of <code><a href="../reference/runGenomicPredictions.html">runGenomicPredictions()</a></code> and <code><a href="../reference/predictCrosses.html">predictCrosses()</a></code> to accomplish predictions of individual and cross performances.</li>
@@ -441,11 +437,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Marnin Wolfe.</p>
+  <p></p>
+<p>Developed by Marnin Wolfe.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -453,6 +451,8 @@
 
   
 
+
+  
 
   </body>
 </html>
