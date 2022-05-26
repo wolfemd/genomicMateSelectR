@@ -52,14 +52,14 @@ splitVCFbyChr<-function(Chr,vcfIn,filters=NULL,outPath,outSuffix){
 #' @family imputation_functions
 #' @return
 #' @export
-runBeagle5<-function(targetVCF,refVCF=NULL,mapFile,outName,window=50,
+runBeagle5<-function(targetVCF,refVCF=NULL,mapFile,outName,window=40,overlap=2,
                      nthreads,maxmem="500g",impute=TRUE,ne=100000,samplesToExclude=NULL){
   system(paste0("java -Xms2g -Xmx",maxmem," -jar /programs/beagle/beagle.jar ",
                 "gt=",targetVCF," ",
                 "map=",mapFile," ",
                 ifelse(!is.null(refVCF),paste0("ref=",refVCF," "), ""),
                 "out=",outName," ",
-                "nthreads=",nthreads," impute=",impute," ne=",ne, " window=",window,
+                "nthreads=",nthreads," impute=",impute," ne=",ne, " window=",window, " overlap=",overlap,
                 ifelse(!is.null(samplesToExclude),paste0(" excludesamples=",samplesToExclude),""))) }
 
 #' Apply quality filters after imputation by Beagle5.0
