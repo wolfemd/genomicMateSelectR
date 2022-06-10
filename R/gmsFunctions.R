@@ -191,9 +191,9 @@ runCrossVal<-function(blups,
                        GEBV=as.numeric(fit$U[[paste0("u:",gid,"a")]]$drgBLUP)) }
       if(modelType=="AD"){
         gblups %<>% # compute GEDD (genomic-estimated dominance deviation)
-          dplyr::mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP),
+          dplyr::mutate(GEDD=as.numeric(fit$U[[paste0("u:",gid,"d")]]$drgBLUP)) %>%
                  # compute GETGV
-                 GETGV=rowSums(.[,grepl("GE",colnames(.))])) }
+          dplyr::mutate(GETGV=rowSums(.[,grepl("GE",colnames(.))])) }
 
       if(modelType=="DirDom"){
         # re-calc the GBLUP, GEdomval using dom. effects where d=d*-b/p
