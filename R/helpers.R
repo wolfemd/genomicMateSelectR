@@ -203,7 +203,7 @@ genoVarCovarMatFunc<-function(Z){
 #' @family helper
 genmap2recombfreq<-function(m,nChr){
   d<-as.matrix(dist(m,upper=T,diag = T,method='manhattan'))
-  c1<-0.5*(1-exp(-2*d))
+  c1<-0.5*(1-exp(-2*(d/100)))
   # Since m contains all chromosomes, set recomb. freq. b/t chrom. to 0.5
   for(i in 1:nChr){
     c1[grepl(paste0("^",i,"_"),rownames(c1)),!grepl(paste0("^",i,"_"),colnames(c1))]<-0.5
