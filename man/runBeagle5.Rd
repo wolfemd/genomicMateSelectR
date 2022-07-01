@@ -6,7 +6,7 @@
 \usage{
 runBeagle5(
   targetVCF,
-  refVCF,
+  refVCF = NULL,
   mapFile,
   outName,
   nthreads,
@@ -19,7 +19,7 @@ runBeagle5(
 \arguments{
 \item{targetVCF}{passes to Beagle `\code{gt=targetVCF}`}
 
-\item{refVCF}{passes to Beagle `\code{ref=targetVCF}`}
+\item{refVCF}{passes to Beagle `\code{ref=refVCF}`}
 
 \item{mapFile}{passes to Beagle `\code{map=mapFile}`}
 
@@ -44,6 +44,9 @@ Refer to Beagle documentation for meaning of arguments passed.
 }
 \details{
 \strong{NOTICE:} This function is part of a family of functions (\code{"imputation_functions"}) developed as part of the NextGen Cassava Breeding Project genomic selection pipeline.
+
+\code{java -Xms2g -Xmx [maxmem] -jar /programs/beagle/beagle.jar gt= [targetVCF] map= [mapFile] ref= [refVCF] out= [outName] nthreads= [nthreads] impute= [impute]  ne=  [ne]}
+
 For some examples of their useage:
 \itemize{
  \item \href{https://wolfemd.github.io/IITA_2021GS/}{IITA_2021GS (\strong{\emph{should be first use of this package}})}

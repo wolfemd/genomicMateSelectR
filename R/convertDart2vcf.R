@@ -29,8 +29,11 @@ convertDart2vcf<-function(dartvcfInput,dartcountsInput,outName,
   ## Read in "VCF" (called genotypes from DArT)
   ## and "counts" files (read counts)
   vcf<-read.table(dartvcfInput,
-                  stringsAsFactors = F,skip = nskipvcf, header = T, sep = "\t", comment.char = "")
-  readCounts<-read.csv(dartcountsInput, stringsAsFactors = F,header = T,skip=nskipcounts)
+                  stringsAsFactors = F, skip = nskipvcf, header = T,
+                  sep = "\t", comment.char = "")
+
+  readCounts<-read.csv(dartcountsInput,
+                       stringsAsFactors = F, skip=nskipcounts, header = T)
 
   ## Formatting chrom and position info
   vcf %<>%
@@ -120,7 +123,8 @@ convertDart2vcf<-function(dartvcfInput,dartcountsInput,outName,
            RefCount=REF)
   vcf_long<-vcf %>%
     .[,c("Chr","Pos","SNPindex","SNP_ID",
-         "CloneID","Alleles","REF","ALT","QUAL","FILTER","INFO","FORMAT",sampleIDsFromDartVCF)] %>%
+         "CloneID","Alleles","REF","ALT",
+         "QUAL","FILTER","INFO","FORMAT",sampleIDsFromDartVCF)] %>%
     pivot_longer(cols = all_of(sampleIDsFromDartVCF), names_to = "FullSampleName", values_to = "GT")
   #    gather(FullSampleName,GT,sampleIDsFromDartVCF)
 
@@ -134,10 +138,9 @@ convertDart2vcf<-function(dartvcfInput,dartcountsInput,outName,
   tmp_counts %<>%
     mutate(DP=AltCount+RefCount,
            AD=paste0(RefCount,",",AltCount))
-  tmp1<-tmp_counts %>%
+  tmp<-tmp_counts %>%
     filter(!is.na(AltCount),
            !is.na(RefCount))
-  tmp<-tmp1; rm(tmp1)
 
   # Calc. genotype likelihoods ----------------------------------------
 
@@ -194,10 +197,10 @@ convertDart2vcf<-function(dartvcfInput,dartcountsInput,outName,
   options("scipen"=1000, "digits"=4)
   # for a few SNPs, position kept printing in sci notation e.g. 1e3, screws up Beagle etc., this avoids that (I hope)
   write_lines(header,
-              path=paste0(outName,".vcf"))
+              file = paste0(outName,".vcf"))
   write.table(tmp,
               paste0(outName,".vcf"),
-              append = T,sep = "\t",row.names=F, col.names=T, quote=F)
+              append = FALSE, sep = "\t", row.names=F, col.names=T, quote=F)
   # Save sitesWithAlleles
   tmp %>%
     rename(CHROM=`#CHROM`) %>%

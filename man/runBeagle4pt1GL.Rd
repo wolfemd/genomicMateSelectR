@@ -20,7 +20,7 @@ runBeagle4pt1GL(
 \arguments{
 \item{targetVCF}{passes to Beagle `\code{gl=targetVCF}`}
 
-\item{refVCF}{passes to Beagle `\code{ref=targetVCF}`}
+\item{refVCF}{passes to Beagle `\code{ref=refVCF}`}
 
 \item{mapFile}{passes to Beagle `\code{map=mapFile}`}
 
@@ -52,6 +52,9 @@ meaning of arguments passed.
 }
 \details{
 \strong{NOTICE:} This function is part of a family of functions (\code{"imputation_functions"}) developed as part of the NextGen Cassava Breeding Project genomic selection pipeline.
+
+\code{java -Xms2g -Xmx [maxmem] -jar /programs/beagle41/beagle41.jar gl= [targetVCF] map= [mapFile] ref= [refVCF] out= [outName] niterations= [niter] nthreads= [nthreads] impute= [impute]  ne=  [ne]}
+
 For some examples of their useage:
 \itemize{
  \item \href{https://wolfemd.github.io/IITA_2021GS/}{IITA_2021GS (\strong{\emph{should be first use of this package}})}
@@ -60,7 +63,7 @@ For some examples of their useage:
 }
 }
 \seealso{
-Other imputation_functions: 
+Other imputation_functions:
 \code{\link{convertDart2vcf}()},
 \code{\link{convertVCFtoDosage}()},
 \code{\link{createGenomewideDosage}()},

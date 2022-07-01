@@ -30,7 +30,7 @@ splitVCFbyChr<-function(Chr,vcfIn,filters=NULL,outPath,outSuffix){
 #' Refer to Beagle documentation for meaning of arguments passed.
 #'
 #' @param targetVCF passes to Beagle `\code{gt=targetVCF}`
-#' @param refVCF passes to Beagle `\code{ref=targetVCF}`
+#' @param refVCF passes to Beagle `\code{ref=refVCF}`
 #' @param mapFile passes to Beagle `\code{map=mapFile}`
 #' @param outName passes to Beagle `\code{out=outName} (\strong{don't put file suffix, Beagle adds \code{*.vcf.gz}}).
 #' @param nthreads passes to Beagle `\code{nthreads=nthreads}`
@@ -40,6 +40,9 @@ splitVCFbyChr<-function(Chr,vcfIn,filters=NULL,outPath,outSuffix){
 #' @param samplesToExclude
 #'
 #' @details \strong{NOTICE:} This function is part of a family of functions (\code{"imputation_functions"}) developed as part of the NextGen Cassava Breeding Project genomic selection pipeline.
+#'
+#' \code{java -Xms2g -Xmx [maxmem] -jar /programs/beagle/beagle.jar gt= [targetVCF] map= [mapFile] ref= [refVCF] out= [outName] nthreads= [nthreads] impute= [impute]  ne=  [ne]}
+#'
 #' For some examples of their useage:
 #' \itemize{
 #'  \item \href{https://wolfemd.github.io/IITA_2021GS/}{IITA_2021GS (\strong{\emph{should be first use of this package}})}
@@ -49,14 +52,14 @@ splitVCFbyChr<-function(Chr,vcfIn,filters=NULL,outPath,outSuffix){
 #' @family imputation_functions
 #' @return
 #' @export
-runBeagle5<-function(targetVCF,refVCF,mapFile,outName,
+runBeagle5<-function(targetVCF,refVCF=NULL,mapFile,outName,window=40,overlap=2,
                      nthreads,maxmem="500g",impute=TRUE,ne=100000,samplesToExclude=NULL){
   system(paste0("java -Xms2g -Xmx",maxmem," -jar /programs/beagle/beagle.jar ",
                 "gt=",targetVCF," ",
                 "map=",mapFile," ",
-                "ref=",refVCF," ",
+                ifelse(!is.null(refVCF),paste0("ref=",refVCF," "), ""),
                 "out=",outName," ",
-                "nthreads=",nthreads," impute=",impute," ne=",ne,
+                "nthreads=",nthreads," impute=",impute," ne=",ne, " window=",window, " overlap=",overlap,
                 ifelse(!is.null(samplesToExclude),paste0(" excludesamples=",samplesToExclude),""))) }
 
 #' Apply quality filters after imputation by Beagle5.0
@@ -285,7 +288,7 @@ createGenomewideDosage<-function(pathIn,chroms,nameOfchromWiseDosageFiles){
 #' meaning of arguments passed.
 #'
 #' @param targetVCF passes to Beagle `\code{gl=targetVCF}`
-#' @param refVCF passes to Beagle `\code{ref=targetVCF}`
+#' @param refVCF passes to Beagle `\code{ref=refVCF}`
 #' @param mapFile passes to Beagle `\code{map=mapFile}`
 #' @param outName passes to Beagle `\code{out=outName} (\strong{don't put file
 #'   suffix, Beagle adds \code{*.vcf.gz}}).
@@ -297,6 +300,9 @@ createGenomewideDosage<-function(pathIn,chroms,nameOfchromWiseDosageFiles){
 #' @param niter passes to Beagle `\code{niterations=niter}`
 #'
 #' @details \strong{NOTICE:} This function is part of a family of functions (\code{"imputation_functions"}) developed as part of the NextGen Cassava Breeding Project genomic selection pipeline.
+#'
+#' \code{java -Xms2g -Xmx [maxmem] -jar /programs/beagle41/beagle41.jar gl= [targetVCF] map= [mapFile] ref= [refVCF] out= [outName] niterations= [niter] nthreads= [nthreads] impute= [impute]  ne=  [ne]}
+#'
 #' For some examples of their useage:
 #' \itemize{
 #'  \item \href{https://wolfemd.github.io/IITA_2021GS/}{IITA_2021GS (\strong{\emph{should be first use of this package}})}
@@ -311,7 +317,7 @@ runBeagle4pt1GL<-function(targetVCF,refVCF,mapFile,outName,
   system(paste0("java -Xms2g -Xmx",maxmem," -jar /programs/beagle41/beagle41.jar ",
                 "gl=",targetVCF," ",
                 "map=",mapFile," ",
-                "ref=",refVCF," ",
+                ifelse(!is.null(refVCF),paste0("ref=",refVCF," "), ""),
                 "out=",outName," ",
                 "niterations=",niter," ",
                 "nthreads=",nthreads," impute=",impute," ne=",ne,
