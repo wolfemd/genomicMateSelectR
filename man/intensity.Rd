@@ -9,9 +9,6 @@ intensity(propSel)
 \arguments{
 \item{propSel}{proportion selection}
 }
-\value{
-
-}
 \description{
 Compute the standardized selection intensity from the proportion selection.
 }

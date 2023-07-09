@@ -9,9 +9,6 @@ mergeVCFs(inPath = NULL, inVCF1, inVCF2, outPath = NULL, outName)
 \arguments{
 \item{outName}{}
 }
-\value{
-
-}
 \description{
 Uses \href{https://samtools.github.io/bcftools/bcftools.html}{\code{bcftools merge}}. Also requires \code{tabix}.
 }

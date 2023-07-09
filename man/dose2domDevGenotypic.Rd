@@ -9,9 +9,6 @@ dose2domDevGenotypic(M)
 \arguments{
 \item{M}{dosage matrix. Assumes SNPs in M coded 0, 1, 2 (requires rounding dosages to integers). M is Nind x Mrow, numeric matrix, with row/columanes to indicate SNP/ind ID}
 }
-\value{
-
-}
 \description{
 This sets up the "genotypic" (aka "biological") partition of additive dominance in terms of their genotypic effects instead of in terms of breeding values or dominance deviations.
 See function \code{\link{dose2domDev}} to set-up the "statistical" (aka "classical") partition in terms of genotypic effects.

@@ -9,9 +9,6 @@ centerDosage(M)
 \arguments{
 \item{M}{dosage matrix. Assumes SNPs in M coded 0, 1, 2 (requires rounding dosages to integers). M is Nind x Mrow, numeric matrix, with row/columanes to indicate SNP/ind ID}
 }
-\value{
-
-}
 \description{
 Centers dosage matrix, e.g. for use in whole-genome regressions like rrBLUP
 }

@@ -9,9 +9,6 @@ convertVCFtoDosage(pathIn, pathOut, vcfName)
 \arguments{
 \item{vcfName}{}
 }
-\value{
-
-}
 \description{
 The function below will
 }

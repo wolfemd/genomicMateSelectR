@@ -17,9 +17,6 @@ varPredAccuracy(
 \arguments{
 \item{ncores}{}
 }
-\value{
-
-}
 \description{
 Title
 }

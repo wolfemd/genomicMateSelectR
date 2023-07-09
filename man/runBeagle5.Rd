@@ -9,6 +9,8 @@ runBeagle5(
   refVCF = NULL,
   mapFile,
   outName,
+  window = 40,
+  overlap = 2,
   nthreads,
   maxmem = "500g",
   impute = TRUE,
@@ -34,9 +36,6 @@ runBeagle5(
 \item{ne}{passes to Beagle `\code{ne=ne}`}
 
 \item{samplesToExclude}{}
-}
-\value{
-
 }
 \description{
 Impute with \href{https://faculty.washington.edu/browning/beagle/b5_0.html}{Beagle V5.0}. Use an "imputation reference panel".

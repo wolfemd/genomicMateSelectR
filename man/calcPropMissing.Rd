@@ -9,9 +9,6 @@ calcPropMissing(TraitValues)
 \arguments{
 \item{TraitValues}{numeric vector}
 }
-\value{
-
-}
 \description{
 Calcluate the proportion missing data
 }

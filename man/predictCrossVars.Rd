@@ -17,9 +17,6 @@ predictCrossVars(
 \arguments{
 \item{nBLASthreads}{}
 }
-\value{
-
-}
 \description{
 Title
 }

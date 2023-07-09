@@ -9,9 +9,6 @@ nestByTrials(indata)
 \arguments{
 \item{indata}{}
 }
-\value{
-
-}
 \description{
 Also, Create some explicitly nested variables including loc and year to nest with the trial data
 }

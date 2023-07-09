@@ -21,9 +21,6 @@ predOneCrossVar(
 \arguments{
 \item{...}{}
 }
-\value{
-
-}
 \description{
 Title
 }

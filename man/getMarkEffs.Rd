@@ -20,9 +20,6 @@ getMarkEffs(
 
 \item{nBLASthreads}{}
 }
-\value{
-
-}
 \description{
 Title
 }

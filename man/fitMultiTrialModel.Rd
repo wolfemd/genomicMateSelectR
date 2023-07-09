@@ -9,9 +9,6 @@ fitMultiTrialModel(curatedTrialData, GID = "GID")
 \arguments{
 \item{GID}{}
 }
-\value{
-
-}
 \description{
 \strong{NOT CURRENTLY IN USE / PROBABLY DEPRECATED}
 }

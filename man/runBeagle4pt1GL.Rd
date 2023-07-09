@@ -37,9 +37,6 @@ suffix, Beagle adds \code{*.vcf.gz}}).}
 
 \item{niter}{passes to Beagle `\code{niterations=niter}`}
 }
-\value{
-
-}
 \description{
 \href{https://faculty.washington.edu/browning/beagle/b4_1.html}{Beagle4.1} is
 slower than Beagle5 by far. However, it can use genotype-likelihoods (the GL
@@ -63,7 +60,7 @@ For some examples of their useage:
 }
 }
 \seealso{
-Other imputation_functions:
+Other imputation_functions: 
 \code{\link{convertDart2vcf}()},
 \code{\link{convertVCFtoDosage}()},
 \code{\link{createGenomewideDosage}()},

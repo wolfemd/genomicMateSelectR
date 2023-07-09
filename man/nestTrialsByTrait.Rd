@@ -9,9 +9,6 @@ nestTrialsByTrait(indata, traits)
 \arguments{
 \item{traits}{character vec, names of traits to include}
 }
-\value{
-
-}
 \description{
 Nest trials by trait
 }

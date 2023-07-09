@@ -11,9 +11,6 @@ filter_positions(inPath = NULL, inVCF, positionFile, outPath = NULL, outName)
 
 \item{outName}{}
 }
-\value{
-
-}
 \description{
 Uses \href{https://vcftools.github.io/index.html}{\code{vcftools --positions}}
 }
