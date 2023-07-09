@@ -24,24 +24,24 @@ readDBdata<-function(phenotypeFile,metadataFile=NULL){
   indata<-possibly_read_csv(phenotypeFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-  if(is.na(indata)){
-    # if from Wizard page
-    indata<-possibly_read_csv(phenotypeFile,
-                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-                              stringsAsFactors = F, skip=3) }
+#  if(is.na(indata)){
+#    # if from Wizard page
+#    indata<-possibly_read_csv(phenotypeFile,
+#                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+#                              stringsAsFactors = F, skip=3) }
 
   if(!is.null(metadataFile)){
     meta<-possibly_read_csv(metadataFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-    if(is.na(meta)){
-      meta<-possibly_read_csv(metadataFile,
-                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-                              stringsAsFactors = F, skip=2) }
-    meta %<>%
-      dplyr::rename(programName=breedingProgramName,
-                    programDescription=breedingProgramDescription,
-                    programDbId=breedingProgramDbId)
+#    if(is.na(meta)){
+#      meta<-possibly_read_csv(metadataFile,
+#                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+#                              stringsAsFactors = F, skip=2) }
+#    meta %<>%
+#      dplyr::rename(programName=breedingProgramName,
+#                    programDescription=breedingProgramDescription,
+#                    programDbId=breedingProgramDbId)
     indata<-dplyr::left_join(indata,meta) }
   indata %<>%
     dplyr::filter(observationLevel=="plot")
@@ -212,10 +212,10 @@ detectExptDesigns<-function(indata){
   # nestByTrials
   nestedDBdata<-indata %>%
     # Create some explicitly nested variables including loc and year to nest with the trial data
-    mutate(yearInLoc=paste0(programName,"_",locationName,"_",studyYear),
-           trialInLocYr=paste0(yearInLoc,"_",studyName),
-           repInTrial=paste0(trialInLocYr,"_",replicate),
-           blockInRep=paste0(repInTrial,"_",blockNumber)) %>%
+    mutate(yearInLoc=paste0(programName,"_",locationName,"_",studyYear) %>% as.factor,
+           trialInLocYr=paste0(yearInLoc,"_",studyName) %>% as.factor,
+           repInTrial=paste0(trialInLocYr,"_",replicate) %>% as.factor,
+           blockInRep=paste0(repInTrial,"_",blockNumber) %>% as.factor) %>%
     nest(TrialData=-c(programName,locationName,studyYear,TrialType,studyName))
 
   # Define complete blocks
@@ -247,7 +247,7 @@ detectExptDesigns<-function(indata){
            # and declare CompleteBlocks==TRUE
            TrialData=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,map(TrialData,~mutate(.,repInTrial=blockInRep)),TrialData),
            Nrep=map_dbl(TrialData,~length(unique(.$repInTrial))),
-           CompleteBlocks=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,TRUE,CompleteBlocks)) -> y
+           CompleteBlocks=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,TRUE,CompleteBlocks) %>% as.factor) -> y
   # Define incomplete blocks
   y %>%
     mutate(repsEqualBlocks=map_lgl(TrialData,~all(.$replicate==.$blockNumber)),
@@ -268,7 +268,7 @@ detectExptDesigns<-function(indata){
   z %<>%
     mutate(IncompleteBlocks=ifelse(CompleteBlocks==FALSE & IncompleteBlocks==FALSE &
                                      Nobs!=Nblock & Nobs!=Nrep &
-                                     medObsPerBlockInRep>1 & Nrep>1,TRUE,IncompleteBlocks))
+                                     medObsPerBlockInRep>1 & Nrep>1,TRUE,IncompleteBlocks) %>% as.factor)
   z %<>%
     dplyr::select(-MaxNOHAV) %>%
     unnest(TrialData)
@@ -299,8 +299,9 @@ nestDesignsDetectedByTraits<-function(indata,traits){
            CompleteBlocks,IncompleteBlocks,
            yearInLoc,trialInLocYr,repInTrial,blockInRep,observationUnitDbId,
            germplasmName,FullSampleName,GID,all_of(traits),PropNOHAV) %>%
-    mutate(IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No"),
-           CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No")) %>%
+    mutate(IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No") %>% as.factor,
+           CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No") %>% as.factor,
+           GID = GID %>% as.factor) %>%
     pivot_longer(cols = all_of(traits), names_to = "Trait", values_to = "Value") %>%
     filter(!is.na(Value),
            !is.na(GID)) %>%
