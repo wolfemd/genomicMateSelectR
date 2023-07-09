@@ -24,24 +24,24 @@ readDBdata<-function(phenotypeFile,metadataFile=NULL){
   indata<-possibly_read_csv(phenotypeFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-#  if(is.na(indata)){
-#    # if from Wizard page
-#    indata<-possibly_read_csv(phenotypeFile,
-#                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-#                              stringsAsFactors = F, skip=3) }
+  if(all(is.na(indata))){
+    # if from Wizard page
+    indata<-possibly_read_csv(phenotypeFile,
+                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                              stringsAsFactors = F, skip=3) }
 
   if(!is.null(metadataFile)){
     meta<-possibly_read_csv(metadataFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-#    if(is.na(meta)){
-#      meta<-possibly_read_csv(metadataFile,
-#                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
-#                              stringsAsFactors = F, skip=2) }
-#    meta %<>%
-#      dplyr::rename(programName=breedingProgramName,
-#                    programDescription=breedingProgramDescription,
-#                    programDbId=breedingProgramDbId)
+    if(all(is.na(meta))){
+      meta<-possibly_read_csv(metadataFile,
+                              na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                              stringsAsFactors = F, skip=2) }
+    meta %<>%
+      dplyr::rename(programName=breedingProgramName,
+                    programDescription=breedingProgramDescription,
+                    programDbId=breedingProgramDbId)
     indata<-dplyr::left_join(indata,meta) }
   indata %<>%
     dplyr::filter(observationLevel=="plot")
@@ -67,7 +67,7 @@ makeTrialTypeVar<-function(indata){
   # So far, this function is not very general
   # Handles IITA and NRCRI trial names as of September 2020.
   # Can customize this or add lines to grab TrialTypes for each breeding program
-  if(indata$programName=="IITA"){
+  if(unique(indata$programName)%in%"IITA"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("CE|clonal|13NEXTgenC1",studyName,ignore.case = T),"CET",NA),
              TrialType=ifelse(grepl("EC",studyName,ignore.case = T),"ExpCET",TrialType),
@@ -83,7 +83,7 @@ makeTrialTypeVar<-function(indata){
              TrialType=ifelse(grepl("NCRP",studyName) & is.na(TrialType),"NCRP",TrialType),
              TrialType=ifelse(grepl("conservation",studyName) & is.na(TrialType),"Conservation",TrialType),
              TrialType=ifelse(grepl("seedling|\\.SN",studyName),"SN",TrialType)) }
-  if(indata$programName=="NRCRI"){
+  if(unique(indata$programName)%in%"NRCRI"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("TP1",studyName,ignore.case = T),"TP1",NA),
              TrialType=ifelse(grepl("TP2",studyName,ignore.case = T),"TP2",TrialType),
@@ -97,7 +97,7 @@ makeTrialTypeVar<-function(indata){
                               "CrossingBlock",TrialType),
              TrialType=ifelse(grepl("seedling",studyName,ignore.case = T),NA,TrialType)) }
 
-  if(indata$programName=="TARI"){
+  if(unique(indata$programName)%in%"TARI"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("Advanced Yield|AYT", trialType, ignore.case = T),"AYT",NA),
              TrialType=ifelse(grepl("Clonal|CET", trialType, ignore.case = T),"CET",TrialType),
