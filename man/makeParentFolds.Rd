@@ -18,9 +18,6 @@ for male and female parent, respectively.}
 
 \item{seed}{integer, make reproducible}
 }
-\value{
-
-}
 \description{
 Create parent-wise cross-validation folds based on an input pedigree.
 }

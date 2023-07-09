@@ -9,9 +9,6 @@ dose2domDev(M)
 \arguments{
 \item{M}{dosage matrix. Assumes SNPs in M coded 0, 1, 2 (requires rounding dosages to integers). M is Nind x Mrow, numeric matrix, with row/columanes to indicate SNP/ind ID}
 }
-\value{
-
-}
 \description{
 Converts a dosage matrix into a matrix of centered dominance deviations.
 This sets up the "classical" (aka "Statistical") partition of additive dominance in terms of breeding values and dom. deviations.

@@ -29,9 +29,6 @@ postImputeFilterBeagle4pt1(
 
 \item{DR2thresh}{remove if imputation quality score \code{DR2} supplied in the VCF INFO field by Beagle is less than or equal to the threshold}
 }
-\value{
-
-}
 \description{
 Remove markers from the imputed VCF based on adjustable thresholds.
 For VCFs imputed by Beagle4.1.

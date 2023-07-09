@@ -29,9 +29,6 @@ postImputeFilter(
 
 \item{MAFthresh}{remove if minor allele frequency less than threshold}
 }
-\value{
-
-}
 \description{
 Remove markers from the imputed VCF based on adjustable thresholds.
 For VCFs imputed by Beagle5

@@ -9,9 +9,6 @@ predictCrossMeans(modelType, snpeffs, parentfolds, doseMat, ncores)
 \arguments{
 \item{ncores}{}
 }
-\value{
-
-}
 \description{
 Title
 }

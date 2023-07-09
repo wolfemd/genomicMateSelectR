@@ -11,9 +11,6 @@ nestDesignsDetectedByTraits(indata, traits)
 
 \item{traits}{character vec, names of traits to include}
 }
-\value{
-
-}
 \description{
 Need to restructure the data from per-trial by regrouping by trait.
 }

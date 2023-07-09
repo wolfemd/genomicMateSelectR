@@ -9,9 +9,6 @@ splitVCFbyChr(Chr, vcfIn, filters = NULL, outPath, outSuffix)
 \arguments{
 \item{outSuffix}{}
 }
-\value{
-
-}
 \description{
 Uses \href{https://vcftools.github.io/index.html}{vcftools}
 }

@@ -9,11 +9,6 @@ nestForMultiTrialAnalysis(curatedTrialData)
 \arguments{
 \item{curatedTrialData}{}
 }
-\value{
-
-
-
-}
 \description{
 \strong{NOT CURRENTLY IN USE / PROBABLY DEPRECATED}
 }

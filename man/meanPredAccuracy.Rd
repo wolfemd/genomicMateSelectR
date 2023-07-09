@@ -16,9 +16,6 @@ meanPredAccuracy(
 \arguments{
 \item{SIwts}{}
 }
-\value{
-
-}
 \description{
 Title
 }

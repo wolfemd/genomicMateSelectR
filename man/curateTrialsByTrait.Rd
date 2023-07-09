@@ -9,9 +9,6 @@ curateTrialsByTrait(nestedTrialData, traits)
 \arguments{
 \item{traits}{}
 }
-\value{
-
-}
 \description{
 \strong{NOT CURRENTLY IN USE / PROBABLY DEPRECATED}
 }

@@ -24,7 +24,7 @@ readDBdata<-function(phenotypeFile,metadataFile=NULL){
   indata<-possibly_read_csv(phenotypeFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-  if(is.na(indata)){
+  if(all(is.na(indata))){
     # if from Wizard page
     indata<-possibly_read_csv(phenotypeFile,
                               na.strings = c("#VALUE!",NA,".",""," ","-","\""),
@@ -34,7 +34,7 @@ readDBdata<-function(phenotypeFile,metadataFile=NULL){
     meta<-possibly_read_csv(metadataFile,
                             na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                             stringsAsFactors = F)
-    if(is.na(meta)){
+    if(all(is.na(meta))){
       meta<-possibly_read_csv(metadataFile,
                               na.strings = c("#VALUE!",NA,".",""," ","-","\""),
                               stringsAsFactors = F, skip=2) }
@@ -67,7 +67,7 @@ makeTrialTypeVar<-function(indata){
   # So far, this function is not very general
   # Handles IITA and NRCRI trial names as of September 2020.
   # Can customize this or add lines to grab TrialTypes for each breeding program
-  if(indata$programName=="IITA"){
+  if(unique(indata$programName)%in%"IITA"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("CE|clonal|13NEXTgenC1",studyName,ignore.case = T),"CET",NA),
              TrialType=ifelse(grepl("EC",studyName,ignore.case = T),"ExpCET",TrialType),
@@ -83,7 +83,7 @@ makeTrialTypeVar<-function(indata){
              TrialType=ifelse(grepl("NCRP",studyName) & is.na(TrialType),"NCRP",TrialType),
              TrialType=ifelse(grepl("conservation",studyName) & is.na(TrialType),"Conservation",TrialType),
              TrialType=ifelse(grepl("seedling|\\.SN",studyName),"SN",TrialType)) }
-  if(indata$programName=="NRCRI"){
+  if(unique(indata$programName)%in%"NRCRI"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("TP1",studyName,ignore.case = T),"TP1",NA),
              TrialType=ifelse(grepl("TP2",studyName,ignore.case = T),"TP2",TrialType),
@@ -97,7 +97,7 @@ makeTrialTypeVar<-function(indata){
                               "CrossingBlock",TrialType),
              TrialType=ifelse(grepl("seedling",studyName,ignore.case = T),NA,TrialType)) }
 
-  if(indata$programName=="TARI"){
+  if(unique(indata$programName)%in%"TARI"){
     outdata<-indata %>%
       mutate(TrialType=ifelse(grepl("Advanced Yield|AYT", trialType, ignore.case = T),"AYT",NA),
              TrialType=ifelse(grepl("Clonal|CET", trialType, ignore.case = T),"CET",TrialType),
@@ -212,10 +212,10 @@ detectExptDesigns<-function(indata){
   # nestByTrials
   nestedDBdata<-indata %>%
     # Create some explicitly nested variables including loc and year to nest with the trial data
-    mutate(yearInLoc=paste0(programName,"_",locationName,"_",studyYear),
-           trialInLocYr=paste0(yearInLoc,"_",studyName),
-           repInTrial=paste0(trialInLocYr,"_",replicate),
-           blockInRep=paste0(repInTrial,"_",blockNumber)) %>%
+    mutate(yearInLoc=paste0(programName,"_",locationName,"_",studyYear) %>% as.factor,
+           trialInLocYr=paste0(yearInLoc,"_",studyName) %>% as.factor,
+           repInTrial=paste0(trialInLocYr,"_",replicate) %>% as.factor,
+           blockInRep=paste0(repInTrial,"_",blockNumber) %>% as.factor) %>%
     nest(TrialData=-c(programName,locationName,studyYear,TrialType,studyName))
 
   # Define complete blocks
@@ -247,7 +247,7 @@ detectExptDesigns<-function(indata){
            # and declare CompleteBlocks==TRUE
            TrialData=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,map(TrialData,~mutate(.,repInTrial=blockInRep)),TrialData),
            Nrep=map_dbl(TrialData,~length(unique(.$repInTrial))),
-           CompleteBlocks=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,TRUE,CompleteBlocks)) -> y
+           CompleteBlocks=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,TRUE,CompleteBlocks) %>% as.factor) -> y
   # Define incomplete blocks
   y %>%
     mutate(repsEqualBlocks=map_lgl(TrialData,~all(.$replicate==.$blockNumber)),
@@ -268,7 +268,7 @@ detectExptDesigns<-function(indata){
   z %<>%
     mutate(IncompleteBlocks=ifelse(CompleteBlocks==FALSE & IncompleteBlocks==FALSE &
                                      Nobs!=Nblock & Nobs!=Nrep &
-                                     medObsPerBlockInRep>1 & Nrep>1,TRUE,IncompleteBlocks))
+                                     medObsPerBlockInRep>1 & Nrep>1,TRUE,IncompleteBlocks) %>% as.factor)
   z %<>%
     dplyr::select(-MaxNOHAV) %>%
     unnest(TrialData)
@@ -299,8 +299,9 @@ nestDesignsDetectedByTraits<-function(indata,traits){
            CompleteBlocks,IncompleteBlocks,
            yearInLoc,trialInLocYr,repInTrial,blockInRep,observationUnitDbId,
            germplasmName,FullSampleName,GID,all_of(traits),PropNOHAV) %>%
-    mutate(IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No"),
-           CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No")) %>%
+    mutate(IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No") %>% as.factor,
+           CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No") %>% as.factor,
+           GID = GID %>% as.factor) %>%
     pivot_longer(cols = all_of(traits), names_to = "Trait", values_to = "Value") %>%
     filter(!is.na(Value),
            !is.na(GID)) %>%

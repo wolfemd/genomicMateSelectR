@@ -22,9 +22,6 @@ predOneCross(
 \arguments{
 \item{...}{}
 }
-\value{
-
-}
 \description{
 Title
 }

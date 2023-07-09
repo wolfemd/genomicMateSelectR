@@ -13,9 +13,6 @@ renameAndSelectCols(traitabbrevs, indata, customColsToKeep = NULL)
 
 \item{customColsToKeep}{char. vec. of any custom cols you added and want to keep}
 }
-\value{
-
-}
 \description{
 Rename columns and remove everything unecessary
 }
